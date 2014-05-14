@@ -7,16 +7,18 @@ LEVELDBPATH ?= ./deps/leveldb
 CXXFLAGS += -I$(LEVELDBPATH)/include -std=gnu++11 -stdlib=libc++
 
 export CXXFLAGS
-all: $(LEVELDBPATH)/libleveldb.a $(BIN)
+all: $(LEVELDBPATH)/libleveldb.a ./deps/linenoise/linenoise.c $(BIN)
 
 $(LEVELDBPATH)/libleveldb.a:
 	$(MAKE) -C $(LEVELDBPATH)
 
 $(BIN):
-	$(CXX) -o $(BIN) $(LEVELDBPATH)/libleveldb.a $(SRC) $(CXXFLAGS) -lpthread
+	$(CC) -c ./deps/linenoise/linenoise.c
+	$(CXX) -o $(BIN) ./linenoise.o $(LEVELDBPATH)/libleveldb.a $(SRC) $(CXXFLAGS) -lpthread
 
 clean:
 	rm -f $(BIN)
+	rm linenoise.o
 	$(MAKE) clean -C $(LEVELDBPATH)
 
 install: all

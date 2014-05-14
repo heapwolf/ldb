@@ -1,4 +1,3 @@
-
 using namespace std;
 
 #define MAX_LINE_LEN 512
