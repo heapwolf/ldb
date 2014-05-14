@@ -1,13 +1,25 @@
-LEVELDBPATH="./deps/leveldb"
 
-all: $(LEVELDBPATH)/libleveldb.a ldb
+CXX ?= g++
+BIN ?= ldb
+SRC = ldb.cc
+PREFIX ?= /usr/local
+LEVELDBPATH ?= ./deps/leveldb
+CXXFLAGS += -lpthread -I$(LEVELDBPATH)/include -std=gnu++11 -stdlib=libc++
+
+all: $(LEVELDBPATH)/libleveldb.a $(BIN)
 
 $(LEVELDBPATH)/libleveldb.a:
-	cd $(LEVELDBPATH) && make
+	CXXFLAGS+='$(CXXFLAGS)' $(MAKE) -C $(LEVELDBPATH)
 
-ldb:
-	g++ -o ldb ldb.cc $(LEVELDBPATH)/libleveldb.a -lpthread -I $(LEVELDBPATH)/include -std=gnu++11
+$(BIN):
+	$(CXX) -o $(BIN) $(LEVELDBPATH)/libleveldb.a $(SRC) $(CXXFLAGS)
 
 clean:
-	rm -f ldb && cd $(LEVELDBPATH) && make clean
+	rm -f $(BIN)
+	$(MAKE) clean -C $(LEVELDBPATH)
 
+install:
+	install $(BIN) $(PREFIX)/bin
+
+uninstall:
+	rm -f $(PREFIX)/bin/$(BIN)

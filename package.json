@@ -1,0 +1,9 @@
+{
+  "name": "ldb",
+  "version": "0.0.1",
+  "repo": "hij1nx/ldb",
+  "description": "A c++ repl for leveldb",
+  "keywords": [ "leveldb", "repl", "level", "db" ],
+  "license": "MIT",
+  "install": "make install"
+}
