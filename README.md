@@ -2,15 +2,9 @@
 A c++ repl for leveldb
 
 # BUILD
-Clone the leveldb project, put it in `./deps/leveldb` and `make` it.
-```
-git clone https://code.google.com/p/leveldb/
-```
 
-Set the path to it and compile.
-```bash
-export LEVELDB="./deps/leveldb"
-g++ -o ldb ldb.cc $LEVELDB/libleveldb.a -lpthread -I $LEVELDB/include -std=gnu++11
+```cli
+$ git clone https://github.com/hij1nx/ldb.git && cd ldb && make
 ```
 
 # USAGE
