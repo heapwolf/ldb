@@ -9,7 +9,7 @@ git clone https://code.google.com/p/leveldb/
 
 Set the path to it and compile.
 ```bash
-set LEVELDB="./deps/leveldb"
+export LEVELDB="./deps/leveldb"
 g++ -o ldb ldb.cc $LEVELDB/libleveldb.a -lpthread -I $LEVELDB/include -std=gnu++11
 ```
 
@@ -53,6 +53,14 @@ Set the end of the current range
 Set the limit for the current range
 ```bash
 limit <number>
+```
+
+# DEPS
+
+Debian
+
+```cli
+# aptitude install libreadline-dev
 ```
 
 # LICENSE
