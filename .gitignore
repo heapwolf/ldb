@@ -1,2 +1,3 @@
 deps/leveldb/libleveldb.so*
+deps/leveldb/libleveldb*
 ldb
