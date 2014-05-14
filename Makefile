@@ -18,7 +18,7 @@ clean:
 	rm -f $(BIN)
 	$(MAKE) clean -C $(LEVELDBPATH)
 
-install:
+install: all
 	install $(BIN) $(PREFIX)/bin
 
 uninstall:
