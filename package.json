@@ -5,5 +5,8 @@
   "description": "A c++ repl for leveldb",
   "keywords": [ "leveldb", "repl", "level", "db" ],
   "license": "MIT",
-  "install": "make install"
+  "install": "make install",
+  "dependencies": {
+    "linenoise": "*"
+  }
 }

@@ -5,16 +5,19 @@
 #include <vector>
 #include <map>
 #include <regex>
-#include <readline/readline.h>
-#include <readline/history.h>
-
 #include <getopt.h>
+
+extern "C" {
+  #include "deps/linenoise/linenoise.h"
+}
+
 #include "leveldb/db.h"
 #include "ldb.h"
 
 int main(int argc, char** argv)
 {
   string path;
+  string history_file = ".ldb_history";
 
   if (argc == 2) path = argv[1];
 
@@ -53,11 +56,15 @@ int main(int argc, char** argv)
     return -1;
   }
 
-  while (1)
-  {
-    cout << "> ";
-    char line[MAX_LINE_LEN];
-    cin.getline(line, MAX_LINE_LEN);
+  char *line = NULL;
+  static int quit = 0;
+
+  linenoiseHistoryLoad(history_file.c_str());
+
+  while ((line = linenoise("> "))) {
+
+    if ('\0' == line[0]) break;
+
     string l = line;
     ldb::command cmd = ldb::parse_cmd(l, ldb::cmds);
 
@@ -117,6 +124,13 @@ int main(int argc, char** argv)
         cout << l << endl;
       }
     }
+
+    if (!quit) {
+      linenoiseHistoryAdd(line);
+      linenoiseHistorySave(history_file.c_str());
+    }
+
+    free(line);
   }
 
    delete db;
