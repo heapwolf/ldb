@@ -6,10 +6,11 @@ PREFIX ?= /usr/local
 LEVELDBPATH ?= ./deps/leveldb
 CXXFLAGS += -lpthread -I$(LEVELDBPATH)/include -std=gnu++11 -stdlib=libc++
 
+export CXXFLAGS
 all: $(LEVELDBPATH)/libleveldb.a $(BIN)
 
 $(LEVELDBPATH)/libleveldb.a:
-	CXXFLAGS+='$(CXXFLAGS)' $(MAKE) -C $(LEVELDBPATH)
+	$(MAKE) -C $(LEVELDBPATH)
 
 $(BIN):
 	$(CXX) -o $(BIN) $(LEVELDBPATH)/libleveldb.a $(SRC) $(CXXFLAGS)
