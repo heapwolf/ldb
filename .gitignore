@@ -1,7 +1,6 @@
 deps/leveldb/libleveldb.so*
 deps/leveldb/libleveldb*
-deps/linenoise/
-linenoise.o
+*.o
 .ldb_history
 ldb
 
