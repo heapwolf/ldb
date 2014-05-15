@@ -1,10 +1,17 @@
 # SYNOPSIS
 A c++ repl for leveldb
 
+# INSTALL
+
+```bash
+$ clib install hij1nx/ldb
+```
+
 # BUILD
 
 ```cli
-$ git clone https://github.com/hij1nx/ldb.git && cd ldb && make
+$ git clone https://github.com/hij1nx/ldb.git
+$ make install -C ldb
 ```
 
 # USAGE
@@ -47,14 +54,6 @@ Set the end of the current range
 Set the limit for the current range
 ```bash
 limit <number>
-```
-
-# DEPS
-
-Debian
-
-```cli
-# aptitude install libreadline-dev
 ```
 
 # LICENSE
