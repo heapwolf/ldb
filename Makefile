@@ -4,7 +4,11 @@ BIN ?= ldb
 SRC = ldb.cc
 PREFIX ?= /usr/local
 LEVELDBPATH ?= ./deps/leveldb
+LIBLEVELDB ?= $(LEVELDBPATH)/libleveldb.a
 CXXFLAGS += -I$(LEVELDBPATH)/include -std=gnu++11
+
+DEPPATH ?= ./deps
+DEPS += linenoise
 
 OS = $(shell uname)
 
@@ -13,18 +17,21 @@ ifeq ($(OS), Darwin)
 endif
 
 export CXXFLAGS
-all: $(LEVELDBPATH)/libleveldb.a ./deps/linenoise/linenoise.c $(BIN)
 
-$(LEVELDBPATH)/libleveldb.a:
+all: leveldb $(BIN)
+
+leveldb:
 	$(MAKE) -C $(LEVELDBPATH)
 
-$(BIN):
-	$(CC) -c ./deps/linenoise/linenoise.c
-	$(CXX) -o $(BIN) $(SRC) $(CXXFLAGS) -lpthread $(LEVELDBPATH)/libleveldb.a ./linenoise.o
+$(BIN): $(DEPS)
+	$(CXX) -o $(BIN) $(SRC) $(CXXFLAGS) -lpthread $(LIBLEVELDB) $(DEPS:=.o)
+
+$(DEPS):
+	$(CC) -c $(DEPPATH)/$(@)/*.c
 
 clean:
 	rm -f $(BIN)
-	rm -f linenoise.o
+	rm -f $(DEPPATH)/{$(DEPS)}/*.o
 	$(MAKE) clean -C $(LEVELDBPATH)
 
 install: all
@@ -32,3 +39,4 @@ install: all
 
 uninstall:
 	rm -f $(PREFIX)/bin/$(BIN)
+
