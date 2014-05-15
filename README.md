@@ -56,14 +56,6 @@ Set the limit for the current range
 limit <number>
 ```
 
-# DEPS
-
-Debian
-
-```cli
-# aptitude install libreadline-dev
-```
-
 # LICENSE
 
 The MIT License (MIT)
