@@ -18,7 +18,7 @@ $(BIN):
 
 clean:
 	rm -f $(BIN)
-	rm linenoise.o
+	rm -f linenoise.o
 	$(MAKE) clean -C $(LEVELDBPATH)
 
 install: all
