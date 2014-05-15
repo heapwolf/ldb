@@ -59,11 +59,19 @@ int main(int argc, char** argv)
   char *line = NULL;
   static int quit = 0;
 
+  linenoiseSetCompletionCallback(ldb::auto_completion);
   linenoiseHistoryLoad(history_file.c_str());
+
+  ldb::range(
+    db,
+    key_start,
+    key_end,
+    ldb::key_cache,
+    true);
 
   while ((line = linenoise("> "))) {
 
-    if ('\0' == line[0]) break;
+    if ('\0' == line[0]) cout << endl;
 
     string l = line;
     ldb::command cmd = ldb::parse_cmd(l, ldb::cmds);
@@ -89,7 +97,14 @@ int main(int argc, char** argv)
 
       case LS:
       {
-        ldb::range(db, key_start, key_end);
+
+        ldb::range(
+          db,
+          key_start,
+          key_end,
+          ldb::key_cache,
+          false);
+
         break;
       }
 
@@ -125,10 +140,8 @@ int main(int argc, char** argv)
       }
     }
 
-    if (!quit) {
-      linenoiseHistoryAdd(line);
-      linenoiseHistorySave(history_file.c_str());
-    }
+    linenoiseHistoryAdd(line);
+    linenoiseHistorySave(history_file.c_str());
 
     free(line);
   }
@@ -136,8 +149,41 @@ int main(int argc, char** argv)
    delete db;
 }
 
-
+//
+//
+//
 namespace ldb {
+
+  //
+  //
+  //
+  void auto_completion(const char *buf, linenoiseCompletions *lc)
+  {
+    string line(buf);
+    //
+    // this should actually search to find out if the thing
+    // is a command that should actually have completion.
+    //
+    regex e("(\\s+)");
+    smatch m;
+
+    regex_search(line, m, e);
+    if (m.empty()) return;
+
+    int pos = m.position() + m.length();
+    string rest = line.substr(pos + 1);
+    string prefix = line.substr(0, pos);
+
+    for (auto & key : key_cache) {
+
+      size_t index = key.find(rest);
+
+      if (index != string::npos) {
+        string entry = prefix + key;
+        linenoiseAddCompletion(lc, entry.c_str());
+      }
+    }
+  }
 
   //
   //
@@ -172,8 +218,15 @@ namespace ldb {
   //
   //
   //
-  void range(leveldb::DB* db, string key_start, string key_end) 
+  void range(
+    leveldb::DB* db,
+    string key_start,
+    string key_end,
+    vector<string>& key_cache,
+    bool surpress_output)
   {
+    key_cache.clear();
+
     leveldb::Slice start = key_start;
     leveldb::Slice end = key_end;
 
@@ -191,7 +244,11 @@ namespace ldb {
         break;
       }
 
-      cout << key.ToString() << endl;
+      key_cache.push_back(sKey);
+
+      if (surpress_output == false) {
+        cout << sKey << endl;
+      }
     }
     delete itr;
   }

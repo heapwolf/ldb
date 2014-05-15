@@ -25,7 +25,13 @@ Open an existing database
 ./ldb ./testdb
 ```
 
+## KEY AUTO-COMPLETE
+`ldb` will get the first n (as defined in `LIMIT`) records and make them
+available for autocomplete. If the limit is redefined, the cache will be
+refreshed when the `LS` command is used.
+
 ## COMMANDS
+
 Get a key's value
 ```bash
 >get <keyname>
@@ -53,7 +59,7 @@ Set the end of the current range
 
 Set the limit for the current range
 ```bash
-limit <number>
+>limit <number>
 ```
 
 # LICENSE
