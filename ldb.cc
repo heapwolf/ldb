@@ -16,36 +16,14 @@ extern "C" {
 
 int main(int argc, char** argv)
 {
-  string path;
   string history_file = ".ldb_history";
-
-  if (argc == 2) path = argv[1];
-
   string key_start = "";
   string key_end = "~";
   int key_limit = 1000;
 
-  leveldb::Options options;
-
-  int c;
-
-  while((c = getopt(argc, argv, "i:ec:d")) != EOF) {
-    switch (c) {
-      case 'i':
-        path = optarg;
-        break;
-      case 'e':
-        options.error_if_exists = true;
-        break;
-      case 'c':
-        path = optarg;
-        options.create_if_missing = true;
-        break;
-    }
-  }
-
+  ldb::Options options = ldb::get_cli_options(argc, argv);
   leveldb::DB* db;
-  leveldb::Status status = leveldb::DB::Open(options, path, &db);
+  leveldb::Status status = leveldb::DB::Open(options, options.path, &db);
 
   if (false == status.ok()) {
     cerr << "Unable to open/create database './testdb'" << endl;
@@ -117,34 +95,6 @@ int main(int argc, char** argv)
   }
 
    delete db;
-}
-
-//
-//
-//
-void ldb::auto_completion(const char *buf, linenoiseCompletions *lc)
-{
-  string line(buf);
-  //
-  // this should actually search to find out if the thing
-  // is a command that should actually have completion.
-  //
-  regex e("(\\s+)");
-  smatch m;
-
-  regex_search(line, m, e);
-  if (m.empty()) return;
-
-  int pos = m.position() + m.length();
-  string rest = line.substr(pos + 1);
-  string prefix = line.substr(0, pos);
-
-  for (auto & key : key_cache) {
-    if (key.find(rest) != string::npos) {
-      string entry = prefix + key;
-      linenoiseAddCompletion(lc, entry.c_str());
-    }
-  }
 }
 
 //
@@ -244,3 +194,59 @@ vector<string> ldb::parse_rest(string rest)
   return parts;
 }
 
+//
+//
+//
+void ldb::auto_completion(const char *buf, linenoiseCompletions *lc)
+{
+  string line(buf);
+  //
+  // this should actually search to find out if the thing
+  // is a command that should actually have completion.
+  //
+  regex e("(\\s+)");
+  smatch m;
+
+  regex_search(line, m, e);
+  if (m.empty()) return;
+
+  int pos = m.position() + m.length();
+  string rest = line.substr(pos + 1);
+  string prefix = line.substr(0, pos);
+
+  for (auto & key : key_cache) {
+    if (key.find(rest) != string::npos) {
+      string entry = prefix + key;
+      linenoiseAddCompletion(lc, entry.c_str());
+    }
+  }
+}
+
+//
+//
+//
+ldb::Options ldb::get_cli_options(int argc, char** argv)
+{
+  ldb::Options options;
+
+  if (argc == 2) options.path = argv[1];
+
+  int c;
+
+  while((c = getopt(argc, argv, "i:ec:d")) != EOF) {
+    switch (c) {
+      case 'i':
+        options.path = optarg;
+        break;
+      case 'e':
+        options.error_if_exists = true;
+        break;
+      case 'c':
+        options.path = optarg;
+        options.create_if_missing = true;
+        break;
+    }
+  }
+
+  return options;
+}
