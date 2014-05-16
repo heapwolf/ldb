@@ -19,58 +19,44 @@ using namespace std;
 
 namespace ldb {
 
+  struct Options : public leveldb::Options {
+    string path;
+  };
+
   struct command {
     size_t id;
     string rest;
   };
 
-  struct Commands
-  {
+  struct Commands {
     int id;
     string name;
     string alias;
-  }
-
-  get { GET, "get", "g" },
-  put { PUT, "put", "p" },
-  del { DEL, "del", "d" },
-  ls { LS, "ls" },
-  start { START, "start", "gt" },
-  end { END, "end", "lt" },
-  limit { LIMIT, "limit", "l" };
+  };
 
   vector<Commands> cmds = {
-    get,
-    put,
-    del,
-    ls,
-    start,
-    end,
-    limit
+    { GET, "get", "g" },
+    { PUT, "put", "p" },
+    { DEL, "del", "d" },
+    { LS, "ls" },
+    { START, "start", "gt" },
+    { END, "end", "lt" },
+    { LIMIT, "limit", "l" }
   };
 
   vector<string> key_cache;
 
-  void range(
-    leveldb::DB *db,
-    string key_start,
-    string key_end,
-    vector<string> &key_cache,
-    bool surpress_output
-  );
+  leveldb::DB* create_database(int argc, char** argv);
 
-  void get_value(
-    leveldb::DB* db,
-    command cmd
-  );
-
-  void put_value(
-    leveldb::DB* db,
-    command cmd
-  );
+  void put_value(leveldb::DB* db, command cmd);
+  void get_value(leveldb::DB* db, command cmd);
+  void range(leveldb::DB *db, string key_start, string key_end,
+              vector<string> &key_cache, bool surpress_output);
 
   command parse_cmd(string line, vector<Commands> cmds);
   vector<string> parse_rest(string rest);
   void auto_completion(const char *buf, linenoiseCompletions *lc);
+  Options get_cli_options(int argc, char** argv);
+
 }
 
