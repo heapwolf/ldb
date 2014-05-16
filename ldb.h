@@ -46,6 +46,8 @@ namespace ldb {
 
   vector<string> key_cache;
 
+  leveldb::DB* create_database(int argc, char** argv);
+
   void put_value(leveldb::DB* db, command cmd);
   void get_value(leveldb::DB* db, command cmd);
   void range(leveldb::DB *db, string key_start, string key_end,

@@ -16,21 +16,16 @@ extern "C" {
 
 #define HISTORY ".ldb_history"
 
+//
+//
+//
 int main(int argc, char** argv)
 {
   string key_start = "";
   string key_end = "~";
   int key_limit = 1000;
 
-  ldb::Options options = ldb::get_cli_options(argc, argv);
-  leveldb::DB* db;
-  leveldb::Status status = leveldb::DB::Open(options, options.path, &db);
-
-  if (false == status.ok()) {
-    cerr << "Unable to open/create database './testdb'" << endl;
-    cerr << status.ToString() << endl;
-    return -1;
-  }
+  leveldb::DB* db = ldb::create_database(argc, argv);
 
   linenoiseSetCompletionCallback(ldb::auto_completion);
   linenoiseHistoryLoad(HISTORY);
@@ -92,8 +87,24 @@ int main(int argc, char** argv)
 
     free(line);
   }
+}
 
-   delete db;
+//
+//
+//
+leveldb::DB* ldb::create_database(int argc, char** argv)
+{
+  leveldb::DB* db;
+  ldb::Options options = ldb::get_cli_options(argc, argv);
+  leveldb::Status status = leveldb::DB::Open(options, options.path, &db);
+
+  if (false == status.ok()) {
+    cerr << "Unable to open/create database " << options.path << endl;
+    cerr << status.ToString() << endl;
+    exit(1);
+  }
+
+  return db;
 }
 
 //
