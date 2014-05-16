@@ -14,9 +14,10 @@ extern "C" {
 #include "leveldb/db.h"
 #include "ldb.h"
 
+#define HISTORY ".ldb_history"
+
 int main(int argc, char** argv)
 {
-  string history_file = ".ldb_history";
   string key_start = "";
   string key_end = "~";
   int key_limit = 1000;
@@ -31,14 +32,12 @@ int main(int argc, char** argv)
     return -1;
   }
 
-  char *line = NULL;
-  static int quit = 0;
-
   linenoiseSetCompletionCallback(ldb::auto_completion);
-  linenoiseHistoryLoad(history_file.c_str());
+  linenoiseHistoryLoad(HISTORY);
 
   ldb::range(db, key_start, key_end, ldb::key_cache, true);
 
+  char *line = NULL;
   while ((line = linenoise("> "))) {
 
     if ('\0' == line[0]) cout << endl;
@@ -89,7 +88,7 @@ int main(int argc, char** argv)
     }
 
     linenoiseHistoryAdd(line);
-    linenoiseHistorySave(history_file.c_str());
+    linenoiseHistorySave(HISTORY);
 
     free(line);
   }
