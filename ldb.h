@@ -1,3 +1,21 @@
+#ifndef LDB_H_
+#define LDB_H_
+
+#include <iostream>
+#include <iomanip>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <map>
+#include <regex>
+#include <getopt.h>
+
+extern "C" {
+  #include "deps/linenoise/linenoise.h"
+}
+
+#include "leveldb/db.h"
+
 using namespace std;
 
 //
@@ -24,32 +42,14 @@ namespace ldb {
     string rest;
   };
 
-  struct Commands
+  struct cDef
   {
     int id;
     string name;
     string alias;
-  }
-
-  get { GET, "get", "g" },
-  put { PUT, "put", "p" },
-  del { DEL, "del", "d" },
-  ls { LS, "ls" },
-  start { START, "start", "gt" },
-  end { END, "end", "lt" },
-  limit { LIMIT, "limit", "l" };
-
-  vector<Commands> cmds = {
-    get,
-    put,
-    del,
-    ls,
-    start,
-    end,
-    limit
   };
 
-  vector<string> key_cache;
+  extern vector<string> key_cache;
 
   void range(
     leveldb::DB *db,
@@ -69,8 +69,10 @@ namespace ldb {
     command cmd
   );
 
-  command parse_cmd(string line, vector<Commands> cmds);
+  command parse_cmd(string line, vector<cDef> cmds);
   vector<string> parse_rest(string rest);
   void auto_completion(const char *buf, linenoiseCompletions *lc);
 }
+
+#endif
 

@@ -1,7 +1,8 @@
 
 CXX ?= g++
 BIN ?= ldb
-SRC = ldb.cc
+LIBPATH ?= ./lib
+SRC = $(LIBPATH)/*.cc ldb.cc 
 PREFIX ?= /usr/local
 LEVELDBPATH ?= ./deps/leveldb
 LIBLEVELDB ?= $(LEVELDBPATH)/libleveldb.a
@@ -23,7 +24,7 @@ all: leveldb $(BIN)
 leveldb:
 	$(MAKE) -C $(LEVELDBPATH)
 
-$(BIN): $(DEPS)
+$(BIN): $(DEPS) $(LIBPATH)/*.cc
 	$(CXX) -o $(BIN) $(SRC) $(CXXFLAGS) -lpthread $(LIBLEVELDB) $(DEPS:=.o)
 
 $(DEPS):
