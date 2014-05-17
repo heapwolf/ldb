@@ -122,9 +122,8 @@ int main(int argc, char** argv)
         break;
       }
 
-      case SIZE: {
+      case SIZE:
         ldb::get_size(db, key_start, key_end);
-      }
 
       default:
         cout << l << endl;

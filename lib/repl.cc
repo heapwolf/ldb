@@ -33,7 +33,7 @@ void ldb::auto_completion(const char *buf, linenoiseCompletions *lc)
 //
 //
 //
-void ldb::put_value(leveldb::DB* db, ldb::command cmd)
+void ldb::put_value(leveldb::DB* db, const ldb::command& cmd)
 {
   vector<string> parts = parse_rest(cmd.rest);
 
@@ -55,7 +55,7 @@ void ldb::put_value(leveldb::DB* db, ldb::command cmd)
 //
 //
 //
-void ldb::del_value(leveldb::DB* db, ldb::command cmd)
+void ldb::del_value(leveldb::DB* db, const ldb::command& cmd)
 {
   vector<string> parts = parse_rest(cmd.rest);
 
@@ -74,10 +74,10 @@ void ldb::del_value(leveldb::DB* db, ldb::command cmd)
 //
 //
 //
-void ldb::get_size(leveldb::DB* db, string key_start, string key_end)
+void ldb::get_size(leveldb::DB* db, const string& start, const string& end)
 {
   leveldb::Range ranges[1]; // we only keep one range, maybe allow more?
-  ranges[0] = leveldb::Range(key_start, key_end);
+  ranges[0] = leveldb::Range(start, end);
   uint64_t sizes[1];
 
   // may be a bug in the docs, GetApproximateSizes returns void, not Status.
@@ -90,7 +90,7 @@ void ldb::get_size(leveldb::DB* db, string key_start, string key_end)
 //
 //
 //
-void ldb::get_value(leveldb::DB* db, ldb::command cmd)
+void ldb::get_value(leveldb::DB* db, const ldb::command& cmd)
 {
   string value;
   leveldb::Status status = db->Get(leveldb::ReadOptions(), cmd.rest, &value);
@@ -105,16 +105,13 @@ void ldb::get_value(leveldb::DB* db, ldb::command cmd)
 //
 //
 //
-void ldb::range(leveldb::DB* db, string key_start, string key_end,
-                 vector<string>& key_cache, bool surpress_output)
+void ldb::range(leveldb::DB* db, const string& start, const string& end,
+                vector<string>& key_cache, bool surpress_output)
 {
   struct winsize term;
   ioctl(0, TIOCGWINSZ, &term);
 
   key_cache.clear();
-
-  leveldb::Slice start = key_start;
-  leveldb::Slice end = key_end;
 
   int count = 0;
   int maxWidth = 0;
@@ -142,7 +139,7 @@ void ldb::range(leveldb::DB* db, string key_start, string key_end,
 
     string sKey = key.ToString();
 
-    if (sKey == key_end) break;
+    if (sKey == end) break;
 
     key_cache.push_back(sKey);
 
@@ -163,7 +160,7 @@ void ldb::range(leveldb::DB* db, string key_start, string key_end,
 //
 //
 //
-ldb::command ldb::parse_cmd(string line, vector<cDef> cmds)
+ldb::command ldb::parse_cmd(const string& line, const vector<cDef>& cmds)
 {
   int pos = line.find(' ');
   string name = line.substr(0, pos);
@@ -185,13 +182,13 @@ ldb::command ldb::parse_cmd(string line, vector<cDef> cmds)
 // duh, this is obviously too simple for most,
 // cases, keys could easily have `;` in them.
 //
-vector<string> ldb::parse_rest(string rest)
+vector<string> ldb::parse_rest(const string& rest)
 {
   vector<string> parts;
   istringstream stream(rest);
   string part;
 
-  while(getline(stream, part, ';')) {
+  while (getline(stream, part, ';')) {
     parts.push_back(part);
   }
 
