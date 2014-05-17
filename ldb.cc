@@ -1,23 +1,28 @@
 #include "ldb.h"
 
+//
+// all commands and their aliases
+//
+#define GET 1
+#define PUT 2
+#define DEL 3
+#define LS 4
+#define START 5
+#define END 6
+#define LIMIT 7
+
+#define HISTORY_FILE ".ldb_history"
+
 namespace ldb {
 
-  cDef get { GET, "get", "g" };
-  cDef put { PUT, "put", "p" };
-  cDef del { DEL, "del", "d" };
-  cDef ls { LS, "ls" };
-  cDef start { START, "start", "gt" };
-  cDef end { END, "end", "lt" };
-  cDef limit { LIMIT, "limit", "l" };
-
   vector<cDef> cmds = {
-    get,
-    put,
-    del,
-    ls,
-    start,
-    end,
-    limit
+    { GET, "get", "g" },
+    { PUT, "put", "p" },
+    { DEL, "del", "d" },
+    { LS, "ls" },
+    { START, "start", "gt" },
+    { END, "end", "lt" },
+    { LIMIT, "limit", "l" }
   };
 
   vector<string> key_cache;
@@ -26,7 +31,6 @@ namespace ldb {
 int main(int argc, char** argv)
 {
   string path;
-  string history_file = ".ldb_history";
 
   if (argc == 2) path = argv[1];
 
@@ -39,27 +43,24 @@ int main(int argc, char** argv)
 
   int c;
 
-  while((c = getopt(argc, argv, "i:ec:d")) != EOF)
-  {
-    switch (c)
-    {
+  while ((c = getopt(argc, argv, "i:ec:d")) != EOF) {
+    switch (c) {
       case 'i':
         path = optarg;
-      break;
+        break;
       case 'e':
         options.error_if_exists = true;
-      break;
+        break;
       case 'c':
         path = optarg;
         options.create_if_missing = true;
-      break;
+        break;
     }
   }
 
   leveldb::Status status = leveldb::DB::Open(options, path, &db);
 
-  if (false == status.ok())
-  {
+  if (false == status.ok()) {
     cerr << "Unable to open/create database './testdb'" << endl;
     cerr << status.ToString() << endl;
     return -1;
@@ -69,14 +70,9 @@ int main(int argc, char** argv)
   static int quit = 0;
 
   linenoiseSetCompletionCallback(ldb::auto_completion);
-  linenoiseHistoryLoad(history_file.c_str());
+  linenoiseHistoryLoad(HISTORY_FILE);
 
-  ldb::range(
-    db,
-    key_start,
-    key_end,
-    ldb::key_cache,
-    true);
+  ldb::range(db, key_start, key_end, ldb::key_cache, true);
 
   while ((line = linenoise("> "))) {
 
@@ -85,54 +81,33 @@ int main(int argc, char** argv)
     string l = line;
     ldb::command cmd = ldb::parse_cmd(l, ldb::cmds);
 
-    switch (cmd.id)
-    {
+    switch (cmd.id) {
       case GET:
-      {
         ldb::get_value(db, cmd);
         break;
-      }
 
       case PUT:
-      {
         ldb::put_value(db, cmd);
         break;
-      }
 
       case DEL:
-      {
         break;
-      }
 
       case LS:
-      {
-
-        ldb::range(
-          db,
-          key_start,
-          key_end,
-          ldb::key_cache,
-          false);
-
+        ldb::range(db, key_start, key_end, ldb::key_cache, false);
         break;
-      }
 
       case START:
-      {
         cout << "START set to " << cmd.rest << endl;
         key_start = cmd.rest;
         break;
-      }
 
       case END:
-      {
         cout << "END set to " << cmd.rest << endl;
         key_end = cmd.rest;
         break;
-      }
 
-      case LIMIT:
-      {
+      case LIMIT: {
         string msg = "LIMIT set to ";
 
         if (cmd.rest.length() == 0) {
@@ -144,18 +119,15 @@ int main(int argc, char** argv)
         break;
       }
 
-      default: {
+      default:
         cout << l << endl;
-      }
     }
 
     linenoiseHistoryAdd(line);
-    linenoiseHistorySave(history_file.c_str());
+    linenoiseHistorySave(HISTORY_FILE);
 
     free(line);
   }
-
-   delete db;
 }
 
 
