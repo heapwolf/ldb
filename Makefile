@@ -36,8 +36,15 @@ clean:
 	$(MAKE) clean -C $(LEVELDBPATH)
 
 install: all
+	ifeq ($(OS), Darwin)
+		cp ./man/ldb.1 /usr/share/man/man1
+	endif
 	install $(BIN) $(PREFIX)/bin
 
 uninstall:
+	ifeq ($(OS), Darwin)
+		rm /usr/share/man/man1/ldb.1
+	endif
+
 	rm -f $(PREFIX)/bin/$(BIN)
 
