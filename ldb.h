@@ -9,6 +9,7 @@
 #include <map>
 #include <regex>
 #include <getopt.h>
+#include <sys/ioctl.h>
 
 extern "C" {
   #include "deps/linenoise/linenoise.h"
@@ -42,6 +43,7 @@ namespace ldb {
   void range(leveldb::DB *db, string key_start, string key_end,
               vector<string> &key_cache, bool surpress_output);
 
+  void get_size(leveldb::DB* db, string key_start, string key_end);
   void del_value(leveldb::DB* db, command cmd);
   void get_value(leveldb::DB* db, command cmd);
   void put_value(leveldb::DB* db, command cmd);

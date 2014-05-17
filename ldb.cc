@@ -10,6 +10,7 @@
 #define START 5
 #define END 6
 #define LIMIT 7
+#define SIZE 8
 
 #define HISTORY_FILE ".ldb_history"
 
@@ -22,7 +23,8 @@ namespace ldb {
     { LS, "ls" },
     { START, "start", "gt" },
     { END, "end", "lt" },
-    { LIMIT, "limit", "l" }
+    { LIMIT, "limit", "l" },
+    { SIZE, "size", "s" }
   };
 
   vector<string> key_cache;
@@ -118,6 +120,10 @@ int main(int argc, char** argv)
         cout << msg << cmd.rest << endl;
         key_limit = atoi(cmd.rest.c_str());
         break;
+      }
+
+      case SIZE: {
+        ldb::get_size(db, key_start, key_end);
       }
 
       default:
