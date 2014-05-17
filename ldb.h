@@ -42,6 +42,7 @@ namespace ldb {
   void range(leveldb::DB *db, string key_start, string key_end,
               vector<string> &key_cache, bool surpress_output);
 
+  void del_value(leveldb::DB* db, command cmd);
   void get_value(leveldb::DB* db, command cmd);
   void put_value(leveldb::DB* db, command cmd);
 

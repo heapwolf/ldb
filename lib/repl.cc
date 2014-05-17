@@ -18,6 +18,7 @@ void ldb::auto_completion(const char *buf, linenoiseCompletions *lc)
 
   int pos = m.position() + m.length();
   string rest = line.substr(pos + 1);
+  if (rest.length() < 1) return;
   string prefix = line.substr(0, pos);
 
   for (auto & key : key_cache) {
@@ -44,8 +45,33 @@ void ldb::put_value(leveldb::DB* db, ldb::command cmd)
   ostringstream valueStream;
   valueStream << parts[1];
 
-  db->Put(writeOptions, keyStream.str(), valueStream.str());
+  leveldb::Status status;
+  status = db->Put(writeOptions, keyStream.str(), valueStream.str());
+  if (!status.ok()) {
+    cout << status.ToString() << endl;
+  }
 }
+
+//
+//
+//
+void ldb::del_value(leveldb::DB* db, ldb::command cmd)
+{
+  vector<string> parts = parse_rest(cmd.rest);
+
+  leveldb::WriteOptions writeOptions;
+
+  ostringstream keyStream;
+  keyStream << parts[0];
+
+  leveldb::Status status;
+  status = db->Delete(leveldb::WriteOptions(), cmd.rest);
+  if (!status.ok()) {
+    cout << status.ToString() << endl;
+  }
+}
+
+
 
 //
 //
@@ -54,8 +80,12 @@ void ldb::get_value(leveldb::DB* db, ldb::command cmd)
 {
   string value;
   leveldb::Status status = db->Get(leveldb::ReadOptions(), cmd.rest, &value);
-  cout << status.ToString() << endl;
-  cout << value << endl;
+  if (!status.ok()) {
+    cout << status.ToString() << endl;
+  }
+  else {
+    cout << value << endl;
+  }
 }
 
 //

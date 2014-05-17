@@ -91,6 +91,7 @@ int main(int argc, char** argv)
         break;
 
       case DEL:
+        ldb::del_value(db, cmd);
         break;
 
       case LS:
