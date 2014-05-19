@@ -1,9 +1,132 @@
 #include "../ldb.h"
 
 //
+// all commands and their aliases
+//
+#define GET 1
+#define PUT 2
+#define DEL 3
+#define LS 4
+#define START 5
+#define END 6
+#define LIMIT 7
+#define SIZE 8
+
+#define HISTORY_FILE ".ldb_history"
+
+vector<string> key_cache;
+
+struct command {
+  size_t id;
+  string rest;
+};
+
+struct cDef {
+  int id;
+  string name;
+  string alias;
+};
+
+const vector<cDef> cmds = {
+  { GET, "get", "g" },
+  { PUT, "put", "p" },
+  { DEL, "del", "d" },
+  { LS, "ls" },
+  { START, "start", "gt" },
+  { END, "end", "lt" },
+  { LIMIT, "limit", "l" },
+  { SIZE, "size", "s" }
+};
+
+void auto_completion(const char *buf, linenoiseCompletions *lc);
+command parse_cmd(const string& line);
+void put_value(leveldb::DB* db, const command& cmd);
+void del_value(leveldb::DB* db, const command& cmd);
+void get_size(leveldb::DB* db, const string& start, const string& end);
+void get_value(leveldb::DB* db, const command& cmd);
+void range(leveldb::DB *db, const string& start, const string& end,
+           bool surpress_output);
+vector<string> parse_rest(const string& rest);
+
 //
 //
-void ldb::auto_completion(const char *buf, linenoiseCompletions *lc)
+//
+void ldb::start_repl(leveldb::DB* db)
+{
+  string key_start = "";
+  string key_end = "~";
+  int key_limit = 1000;
+
+  range(db, key_start, key_end, true);
+
+  linenoiseSetCompletionCallback(auto_completion);
+  linenoiseHistoryLoad(HISTORY_FILE);
+
+  char *line = NULL;
+  while ((line = linenoise("> "))) {
+
+    if ('\0' == line[0]) cout << endl;
+
+    string l = line;
+    command cmd = parse_cmd(l);
+
+    switch (cmd.id) {
+      case GET:
+        get_value(db, cmd);
+        break;
+
+      case PUT:
+        put_value(db, cmd);
+        break;
+
+      case DEL:
+        del_value(db, cmd);
+        break;
+
+      case LS:
+        range(db, key_start, key_end, false);
+        break;
+
+      case START:
+        cout << "START set to " << cmd.rest << endl;
+        key_start = cmd.rest;
+        break;
+
+      case END:
+        cout << "END set to " << cmd.rest << endl;
+        key_end = cmd.rest;
+        break;
+
+      case LIMIT: {
+        string msg = "LIMIT set to ";
+
+        if (cmd.rest.length() == 0) {
+          cout << msg << key_limit << endl;
+          break;
+        }
+        cout << msg << cmd.rest << endl;
+        key_limit = atoi(cmd.rest.c_str());
+        break;
+      }
+
+      case SIZE:
+        get_size(db, key_start, key_end);
+
+      default:
+        cout << l << endl;
+    }
+
+    linenoiseHistoryAdd(line);
+    linenoiseHistorySave(HISTORY_FILE);
+
+    free(line);
+  }
+}
+
+//
+//
+//
+void auto_completion(const char *buf, linenoiseCompletions *lc)
 {
   string line(buf);
   //
@@ -33,7 +156,7 @@ void ldb::auto_completion(const char *buf, linenoiseCompletions *lc)
 //
 //
 //
-void ldb::put_value(leveldb::DB* db, const ldb::command& cmd)
+void put_value(leveldb::DB* db, const command& cmd)
 {
   vector<string> parts = parse_rest(cmd.rest);
 
@@ -55,7 +178,7 @@ void ldb::put_value(leveldb::DB* db, const ldb::command& cmd)
 //
 //
 //
-void ldb::del_value(leveldb::DB* db, const ldb::command& cmd)
+void del_value(leveldb::DB* db, const command& cmd)
 {
   vector<string> parts = parse_rest(cmd.rest);
 
@@ -74,7 +197,7 @@ void ldb::del_value(leveldb::DB* db, const ldb::command& cmd)
 //
 //
 //
-void ldb::get_size(leveldb::DB* db, const string& start, const string& end)
+void get_size(leveldb::DB* db, const string& start, const string& end)
 {
   leveldb::Range ranges[1]; // we only keep one range, maybe allow more?
   ranges[0] = leveldb::Range(start, end);
@@ -90,7 +213,7 @@ void ldb::get_size(leveldb::DB* db, const string& start, const string& end)
 //
 //
 //
-void ldb::get_value(leveldb::DB* db, const ldb::command& cmd)
+void get_value(leveldb::DB* db, const command& cmd)
 {
   string value;
   leveldb::Status status = db->Get(leveldb::ReadOptions(), cmd.rest, &value);
@@ -105,8 +228,8 @@ void ldb::get_value(leveldb::DB* db, const ldb::command& cmd)
 //
 //
 //
-void ldb::range(leveldb::DB* db, const string& start, const string& end,
-                vector<string>& key_cache, bool surpress_output)
+void range(leveldb::DB* db, const string& start, const string& end,
+           bool surpress_output)
 {
   struct winsize term;
   ioctl(0, TIOCGWINSZ, &term);
@@ -160,7 +283,7 @@ void ldb::range(leveldb::DB* db, const string& start, const string& end,
 //
 //
 //
-ldb::command ldb::parse_cmd(const string& line, const vector<cDef>& cmds)
+command parse_cmd(const string& line)
 {
   int pos = line.find(' ');
   string name = line.substr(0, pos);
@@ -182,7 +305,7 @@ ldb::command ldb::parse_cmd(const string& line, const vector<cDef>& cmds)
 // duh, this is obviously too simple for most,
 // cases, keys could easily have `;` in them.
 //
-vector<string> ldb::parse_rest(const string& rest)
+vector<string> parse_rest(const string& rest)
 {
   vector<string> parts;
   istringstream stream(rest);
