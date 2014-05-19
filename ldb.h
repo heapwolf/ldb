@@ -3,10 +3,7 @@
 
 #include <iostream>
 #include "leveldb/db.h"
-
-namespace ldb {
-  void start_repl(leveldb::DB* db);
-}
+#include "lib/repl.h"
 
 #endif // _LDB_H_
 
