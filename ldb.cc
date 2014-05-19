@@ -1,4 +1,7 @@
+#include <getopt.h>
 #include "ldb.h"
+
+using namespace std;
 
 struct Options : public leveldb::Options {
   string path;

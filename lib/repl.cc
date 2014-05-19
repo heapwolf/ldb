@@ -1,4 +1,13 @@
+#include <iomanip>
+#include <regex>
+#include <sys/ioctl.h>
 #include "../ldb.h"
+
+extern "C" {
+  #include "../deps/linenoise/linenoise.h"
+}
+
+using namespace std;
 
 //
 // all commands and their aliases
@@ -13,6 +22,12 @@
 #define SIZE 8
 
 #define HISTORY_FILE ".ldb_history"
+
+//
+// Colors for formatting completions
+//
+#define BRIGHT 1
+#define RED 31
 
 vector<string> key_cache;
 
