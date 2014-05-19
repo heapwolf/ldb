@@ -1,47 +1,15 @@
 #include "ldb.h"
 
-namespace ldb {
-  struct Options : public leveldb::Options {
-    string path;
-  };
-
-  leveldb::DB* create_database(int argc, char** argv);
-  Options get_options(int argc, char** argv);
-}
+struct Options : public leveldb::Options {
+  string path;
+};
 
 //
 //
 //
-int main(int argc, char** argv)
+static Options get_options(int argc, char** argv)
 {
-  leveldb::DB* db = ldb::create_database(argc, argv);
-  ldb::start_repl(db);
-}
-
-//
-//
-//
-leveldb::DB* ldb::create_database(int argc, char** argv)
-{
-  leveldb::DB* db;
-  ldb::Options options = ldb::get_options(argc, argv);
-  leveldb::Status status = leveldb::DB::Open(options, options.path, &db);
-
-  if (false == status.ok()) {
-    cerr << "Unable to open/create database " << options.path << endl;
-    cerr << status.ToString() << endl;
-    exit(1);
-  }
-
-  return db;
-}
-
-//
-//
-//
-ldb::Options ldb::get_options(int argc, char** argv)
-{
-  ldb::Options options;
+  Options options;
 
   if (argc == 2) options.path = argv[1];
 
@@ -63,4 +31,31 @@ ldb::Options ldb::get_options(int argc, char** argv)
   }
 
   return options;
+}
+
+//
+//
+//
+static leveldb::DB* create_database(int argc, char** argv)
+{
+  leveldb::DB* db;
+  Options options = get_options(argc, argv);
+  leveldb::Status status = leveldb::DB::Open(options, options.path, &db);
+
+  if (false == status.ok()) {
+    cerr << "Unable to open/create database " << options.path << endl;
+    cerr << status.ToString() << endl;
+    exit(1);
+  }
+
+  return db;
+}
+
+//
+//
+//
+int main(int argc, char** argv)
+{
+  leveldb::DB* db = create_database(argc, argv);
+  ldb::start_repl(db);
 }
