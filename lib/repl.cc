@@ -1,6 +1,21 @@
 #include "../ldb.h"
 
 //
+// provides all commands and their aliases.
+// these are used by the repl.
+//
+vector<ldb::cDef> ldb::cmds = {
+  { GET, "get", "g" },
+  { PUT, "put", "p" },
+  { DEL, "del", "d" },
+  { LS, "ls" },
+  { START, "start", "gt" },
+  { END, "end", "lt" },
+  { LIMIT, "limit", "l" },
+  { SIZE, "size", "s" }
+};
+
+//
 //
 //
 void ldb::auto_completion(const char *buf, linenoiseCompletions *lc)
@@ -21,140 +36,13 @@ void ldb::auto_completion(const char *buf, linenoiseCompletions *lc)
   if (rest.length() < 1) return;
   string prefix = line.substr(0, pos);
 
-  for (auto & key : key_cache) {
+  for (auto & key : ldb::key_cache) {
     size_t index = key.find(rest);
     if (index != string::npos) {
       string entry = prefix + key;
       linenoiseAddCompletion(lc, entry.c_str());
     }
   }
-}
-
-//
-//
-//
-void ldb::put_value(leveldb::DB* db, const ldb::command& cmd)
-{
-  vector<string> parts = parse_rest(cmd.rest);
-
-  leveldb::WriteOptions writeOptions;
-
-  ostringstream keyStream;
-  keyStream << parts[0];
-
-  ostringstream valueStream;
-  valueStream << parts[1];
-
-  leveldb::Status status;
-  status = db->Put(writeOptions, keyStream.str(), valueStream.str());
-  if (!status.ok()) {
-    cerr << status.ToString() << endl;
-  }
-}
-
-//
-//
-//
-void ldb::del_value(leveldb::DB* db, const ldb::command& cmd)
-{
-  vector<string> parts = parse_rest(cmd.rest);
-
-  leveldb::WriteOptions writeOptions;
-
-  ostringstream keyStream;
-  keyStream << parts[0];
-
-  leveldb::Status status;
-  status = db->Delete(leveldb::WriteOptions(), cmd.rest);
-  if (!status.ok()) {
-    cerr << status.ToString() << endl;
-  }
-}
-
-//
-//
-//
-void ldb::get_size(leveldb::DB* db, const string& start, const string& end)
-{
-  leveldb::Range ranges[1]; // we only keep one range, maybe allow more?
-  ranges[0] = leveldb::Range(start, end);
-  uint64_t sizes[1];
-
-  // may be a bug in the docs, GetApproximateSizes returns void, not Status.
-  db->GetApproximateSizes(ranges, 1, sizes);
-  if (sizes[0]) {
-    cout << sizes[0];
-  }
-}
-
-//
-//
-//
-void ldb::get_value(leveldb::DB* db, const ldb::command& cmd)
-{
-  string value;
-  leveldb::Status status = db->Get(leveldb::ReadOptions(), cmd.rest, &value);
-  if (!status.ok()) {
-    cerr << status.ToString() << endl;
-  }
-  else {
-    cout << value << endl;
-  }
-}
-
-//
-//
-//
-void ldb::range(leveldb::DB* db, const string& start, const string& end,
-                vector<string>& key_cache, bool surpress_output)
-{
-  struct winsize term;
-  ioctl(0, TIOCGWINSZ, &term);
-
-  key_cache.clear();
-
-  int count = 0;
-  int maxWidth = 0;
-  int maxColumns = 0;
-  int padding = 2;
-
-  leveldb::Iterator* itr = db->NewIterator(leveldb::ReadOptions());
-
-  for (itr->Seek(start); itr->Valid(); itr->Next()) {
-    leveldb::Slice key = itr->key();
-    leveldb::Slice value = itr->value();
-
-    int len = key.ToString().length();
-    if (len > maxWidth) {
-      maxWidth = len;
-    }
-  }
-
-  maxWidth += padding;
-  maxColumns = term.ws_col / maxWidth;
-
-  for (itr->Seek(start); itr->Valid(); itr->Next()) {
-    leveldb::Slice key = itr->key();
-    leveldb::Slice value = itr->value();
-
-    string sKey = key.ToString();
-
-    if (sKey == end) break;
-
-    key_cache.push_back(sKey);
-
-    if (surpress_output == false) {
-      count++;
-      cout << setw(maxWidth) << left << sKey;
-      if (count == maxColumns - 1) {
-        count = 0;
-        cout << endl;
-      }
-    }
-  }
-
-  cout << endl;
-  delete itr;
 }
 
 //
@@ -193,5 +81,81 @@ vector<string> ldb::parse_rest(const string& rest)
   }
 
   return parts;
+}
+
+void ldb::startREPL(leveldb::DB* db) {
+
+  char *line = NULL;
+
+  linenoiseSetCompletionCallback(ldb::auto_completion);
+  linenoiseHistoryLoad(HISTORY_FILE);
+
+  ldb::range(db, true);
+
+  while ((line = linenoise("> "))) {
+
+    if ('\0' == line[0]) cout << endl;
+
+    string l = line;
+    ldb::command cmd = ldb::parse_cmd(l, ldb::cmds);
+
+    switch (cmd.id) {
+      case GET: {
+        ldb::get_value(db, cmd);
+        break;
+      }
+
+      case PUT: {
+        vector<string> pair = parse_rest(cmd.rest);
+        leveldb::WriteOptions writeOptions;
+        ldb::put_value(db, pair[0], pair[1]);
+        break;
+      }
+
+      case DEL: {
+        ldb::del_value(db, cmd);
+        break;
+      }
+
+      case LS:
+        ldb::range(db, false);
+        break;
+
+      case START:
+        cout << "START set to " << cmd.rest << endl;
+        key_start = cmd.rest;
+        break;
+
+      case END:
+        cout << "END set to " << cmd.rest << endl;
+        ldb::key_end = cmd.rest;
+        break;
+
+      case LIMIT: {
+        string msg = "LIMIT set to ";
+
+        if (cmd.rest.length() == 0) {
+          cout << msg << ldb::key_limit << endl;
+          break;
+        }
+        cout << msg << cmd.rest << endl;
+        key_limit = atoi(cmd.rest.c_str());
+        break;
+      }
+
+      case SIZE:
+        ldb::get_size(db);
+        break;
+
+      default:
+        cout << l << endl;
+        break;
+    }
+
+    linenoiseHistoryAdd(line);
+    linenoiseHistorySave(HISTORY_FILE);
+
+    free(line);
+  }
 }
 

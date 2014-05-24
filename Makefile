@@ -2,14 +2,14 @@
 CXX ?= g++
 BIN ?= ldb
 LIBPATH ?= ./lib
-SRC = $(LIBPATH)/*.cc ldb.cc 
+SRC = ldb.cc $(LIBPATH)/*.cc 
 PREFIX ?= /usr/local
 LEVELDBPATH ?= ./deps/leveldb
 LIBLEVELDB ?= $(LEVELDBPATH)/libleveldb.a
 CXXFLAGS += -I$(LEVELDBPATH)/include -std=gnu++11
 
 DEPPATH ?= ./deps
-DEPS += linenoise
+DEPS += ./linenoise
 
 OS = $(shell uname)
 
