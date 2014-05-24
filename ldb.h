@@ -19,17 +19,6 @@ extern "C" {
 
 using namespace std;
 
-#define GET 1
-#define PUT 2
-#define DEL 3
-#define LS 4
-#define START 5
-#define END 6
-#define LIMIT 7
-#define SIZE 8
-
-#define HISTORY_FILE ".ldb_history"
-
 //
 // Colors for formatting completions
 //
@@ -47,6 +36,7 @@ namespace ldb {
     int id;
     string name;
     string alias;
+    string desc;
   };
 
   extern vector<cDef> cmds;

@@ -15,15 +15,17 @@ $ make install -C ldb
 ```
 
 # USAGE
-Create a new database
+Open an existing database with interactive mode (REPL) and create the
+database if it does not exist with optional flag `-c`.
 ```bash
-./ldb -c ./testdb
+ldb -i ./testdb -c
 ```
 
-Open an existing database
+Use as a commandline interface
 ```bash
-./ldb ./testdb
+ldb -h
 ```
+
 
 ## KEY AUTO-COMPLETE
 `ldb` will get the first n (as defined in `LIMIT`) records and make them

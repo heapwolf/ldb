@@ -29,16 +29,9 @@ int ldb::key_limit = 1000;
 int main(int argc, const char** argv)
 {
   bool interactive = false;
-  ldb::command cmd;
   leveldb::DB* db;
   leveldb::Options options;
   optionparser::parser p;
-
-  cmd.id = 0;
-
-  p.add_option("--location", "-l")
-   .help("location of the database")
-   .mode(optionparser::store_value);
 
   p.add_option("--interactive", "-i")
    .help("interactive mode (REPL)")
@@ -48,13 +41,17 @@ int main(int argc, const char** argv)
    .help("a string that represents a key")
    .mode(optionparser::store_value);
 
+  p.add_option("--keys", "-k")
+   .help("list the keys in the current range")
+   .mode(optionparser::store_true);
+
   p.add_option("--start", "-s")
    .help("specify the start of the current range")
    .mode(optionparser::store_value);
 
-  p.add_option("--keys", "-k")
-   .help("list the keys in the current range")
-   .mode(optionparser::store_true);
+  p.add_option("--limit", "-l")
+   .help("limit the number of keys in the current range")
+   .mode(optionparser::store_value);
 
   p.add_option("--end", "-e")
    .help("specify the end of the current range")
@@ -64,8 +61,12 @@ int main(int argc, const char** argv)
    .help("put a key and value pair into the database (requires --value <string>)")
    .mode(optionparser::store_value);
 
+  p.add_option("--del", "-d")
+   .help("delete a key and value from the database")
+   .mode(optionparser::store_value);
+
   p.add_option("--value", "-v")
-   .help("put a key and value pair into the database (requires --put <string>)")
+   .help("put a key and value into the database (requires --put <string>)")
    .mode(optionparser::store_value);
 
   p.add_option("--create", "-c")
@@ -87,12 +88,12 @@ int main(int argc, const char** argv)
     interactive = true;
     path = p.get_value<string>("interactive");
   }
-  else if (p.get_value("location")) {
-    path = p.get_value<string>("location");
-  }
-  else {
+  else if (!argv[1] || argv[1][0] == '-') {
     cerr << "A path is required" << endl;
     return -1;
+  }
+  else {
+    path = argv[1];
   }
 
   if (p.get_value("create")) {
@@ -115,19 +116,6 @@ int main(int argc, const char** argv)
     return 0;
   }
 
-  if (p.get_value("get")) {
-
-    cmd.rest = p.get_value<string>("get"); 
-    ldb::get_value(db, cmd);
-  }
-
-  if (p.get_value("put") && p.get_value("value")) {
-
-    string key = p.get_value<string>("put");
-    string value = p.get_value<string>("value");
-    ldb::put_value(db, key, value);
-  }
-
   if (p.get_value("start")) {
     ldb::key_start = p.get_value<string>("start");
   }
@@ -136,7 +124,23 @@ int main(int argc, const char** argv)
     ldb::key_end = p.get_value<string>("end");
   }
 
-  if (p.get_value("keys")) {
+  if (p.get_value("limit")) {
+    ldb::key_limit = p.get_value<int>("limit");
+  }
+
+  if (p.get_value("get")) {
+    ldb::get_value(db, p.get_value<string>("get"));
+  }
+  else if (p.get_value("put") && p.get_value("value")) {
+
+    string key = p.get_value<string>("put");
+    string value = p.get_value<string>("value");
+    ldb::put_value(db, key, value);
+  }
+  else if (p.get_value("del")) {
+    ldb::del_value(db, p.get_value<string>("del"));
+  }
+  else if (p.get_value("keys")) {
     ldb::range(db, false);
   }
   else if (p.get_value("size")) {

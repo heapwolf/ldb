@@ -1,4 +1,3 @@
-
 CXX ?= g++
 BIN ?= ldb
 LIBPATH ?= ./lib

@@ -16,12 +16,13 @@ void ldb::put_value(leveldb::DB* db, string key, string value)
 //
 //
 //
-void ldb::get_value(leveldb::DB* db, const ldb::command& cmd)
+void ldb::get_value(leveldb::DB* db, string key)
 {
   string value;
-  leveldb::Status status = db->Get(leveldb::ReadOptions(), cmd.rest, &value);
+  leveldb::Status status = db->Get(leveldb::ReadOptions(), key, &value);
+
   if (!status.ok()) {
-    cerr << status.ToString() << cmd.rest << endl;
+    cerr << status.ToString() << key << endl;
   }
   else {
     cout << value << endl;
@@ -31,14 +32,12 @@ void ldb::get_value(leveldb::DB* db, const ldb::command& cmd)
 //
 //
 //
-void ldb::del_value(leveldb::DB* db, const ldb::command& cmd)
+void ldb::del_value(leveldb::DB* db, string key)
 {
-  vector<string> parts = parse_rest(cmd.rest);
-
   leveldb::WriteOptions writeOptions;
   leveldb::Status status;
 
-  status = db->Delete(leveldb::WriteOptions(), cmd.rest);
+  status = db->Delete(leveldb::WriteOptions(), key);
   if (!status.ok()) {
     cerr << status.ToString() << endl;
   }
@@ -61,7 +60,7 @@ void ldb::range(leveldb::DB* db, bool surpress_output)
 
   leveldb::Iterator* itr = db->NewIterator(leveldb::ReadOptions());
 
-  for (itr->Seek(ldb::key_start); itr->Valid(); itr->Next()) {
+  for (itr->Seek(key_start); itr->Valid(); itr->Next()) {
     leveldb::Slice key = itr->key();
     leveldb::Slice value = itr->value();
 
@@ -74,19 +73,22 @@ void ldb::range(leveldb::DB* db, bool surpress_output)
   maxWidth += padding;
   maxColumns = term.ws_col / maxWidth;
 
-  for (itr->Seek(ldb::key_start); itr->Valid(); itr->Next()) {
+  for (itr->Seek(key_start); itr->Valid(); itr->Next()) {
 
     leveldb::Slice key = itr->key();
     leveldb::Slice value = itr->value();
 
     string sKey = key.ToString();
 
-    if (sKey == ldb::key_end) break;
+    if (sKey == key_end) break;
 
     ldb::key_cache.push_back(sKey);
 
     if (surpress_output == false) {
       count++;
+
+      if (count == key_limit + 1) break;
+
       cout << setw(maxWidth) << left << sKey;
       if (count == maxColumns - 1) {
         count = 0;

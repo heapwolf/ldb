@@ -1,18 +1,31 @@
 #include "../ldb.h"
 
+#define GET 1
+#define PUT 2
+#define DEL 3
+#define LS 4
+#define START 5
+#define END 6
+#define LIMIT 7
+#define SIZE 8
+#define HELP 9
+
+#define HISTORY_FILE ".ldb_history"
+
 //
 // provides all commands and their aliases.
 // these are used by the repl.
 //
 vector<ldb::cDef> ldb::cmds = {
-  { GET, "get", "g" },
-  { PUT, "put", "p" },
-  { DEL, "del", "d" },
-  { LS, "ls" },
-  { START, "start", "gt" },
-  { END, "end", "lt" },
-  { LIMIT, "limit", "l" },
-  { SIZE, "size", "s" }
+  { GET,   "get",   "g",  "get a key from the database" },
+  { PUT,   "put",   "p",  "put a key/value into the database" },
+  { DEL,   "del",   "d",  "delete a key/value from the database" },
+  { LS,    "keys",  "ls", "list the keys in the current range" },
+  { START, "start", "gt", "set the upper bound of the current range" },
+  { END,   "end",   "lt", "set the lower bound of the current range" },
+  { LIMIT, "limit", "l",  "set the limit of the current range" },
+  { SIZE,  "size",  "s",  "determine the size of the current range (in bytes)" },
+  { HELP,  "help",  "h",  "print this list of REPL commands" }
 };
 
 //
@@ -101,7 +114,7 @@ void ldb::startREPL(leveldb::DB* db) {
 
     switch (cmd.id) {
       case GET: {
-        ldb::get_value(db, cmd);
+        ldb::get_value(db, cmd.rest);
         break;
       }
 
@@ -113,7 +126,7 @@ void ldb::startREPL(leveldb::DB* db) {
       }
 
       case DEL: {
-        ldb::del_value(db, cmd);
+        ldb::del_value(db, cmd.rest);
         break;
       }
 
@@ -128,14 +141,14 @@ void ldb::startREPL(leveldb::DB* db) {
 
       case END:
         cout << "END set to " << cmd.rest << endl;
-        ldb::key_end = cmd.rest;
+        key_end = cmd.rest;
         break;
 
       case LIMIT: {
         string msg = "LIMIT set to ";
 
         if (cmd.rest.length() == 0) {
-          cout << msg << ldb::key_limit << endl;
+          cout << msg << key_limit << endl;
           break;
         }
         cout << msg << cmd.rest << endl;
@@ -147,8 +160,18 @@ void ldb::startREPL(leveldb::DB* db) {
         ldb::get_size(db);
         break;
 
+      case HELP:
+
+        for (auto &cmd : cmds) {
+          cout << ' ' << setw(12) << cmd.name;
+          cout << ' ' << setw(6) << cmd.alias;
+          cout << ' ' << cmd.desc << endl;
+        }
+
+        break;
+
       default:
-        cout << l << endl;
+        cout << "unknown: " << l << endl;
         break;
     }
 
