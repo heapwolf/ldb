@@ -34,11 +34,18 @@ clean:
 	rm -f $(DEPPATH)/{$(DEPS)}/*.o
 	$(MAKE) clean -C $(LEVELDBPATH)
 
-install: all
-	cp ./man/ldb.1 /usr/share/man/man1
+install: all install-manpages
 	install $(BIN) $(PREFIX)/bin
+
+install-manpages:
+	cp ./man/ldb.1.roff /usr/share/man/man1/ldb.1
 
 uninstall:
 	rm /usr/share/man/man1/ldb.1
 	rm -f $(PREFIX)/bin/$(BIN)
 
+docs:
+	./node_modules/.bin/ronn --date `date +%Y/%m` --build --man man/ldb.1.md
+
+test-docs:
+	make docs && sudo make install-manpages && man ldb

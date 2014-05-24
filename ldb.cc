@@ -42,6 +42,18 @@ optionparser::parser create_options_parser()
    .help("a string that represents a key")
    .mode(optionparser::store_value);
 
+  p.add_option("--put", "-p")
+   .help("put a key and value pair into the database (requires --value <string>)")
+   .mode(optionparser::store_value);
+
+  p.add_option("--value", "-v")
+   .help("put a key and value into the database (requires --put <string>)")
+   .mode(optionparser::store_value);
+
+  p.add_option("--del", "-d")
+   .help("delete a key and value from the database")
+   .mode(optionparser::store_value);
+
   p.add_option("--keys", "-k")
    .help("list the keys in the current range")
    .mode(optionparser::store_true);
@@ -50,24 +62,12 @@ optionparser::parser create_options_parser()
    .help("specify the start of the current range")
    .mode(optionparser::store_value);
 
-  p.add_option("--limit", "-l")
-   .help("limit the number of keys in the current range")
-   .mode(optionparser::store_value);
-
   p.add_option("--end", "-e")
    .help("specify the end of the current range")
    .mode(optionparser::store_value);
 
-  p.add_option("--put", "-p")
-   .help("put a key and value pair into the database (requires --value <string>)")
-   .mode(optionparser::store_value);
-
-  p.add_option("--del", "-d")
-   .help("delete a key and value from the database")
-   .mode(optionparser::store_value);
-
-  p.add_option("--value", "-v")
-   .help("put a key and value into the database (requires --put <string>)")
+  p.add_option("--limit", "-l")
+   .help("limit the number of keys in the current range")
    .mode(optionparser::store_value);
 
   p.add_option("--create", "-c")
@@ -82,7 +82,7 @@ optionparser::parser create_options_parser()
    .help("get the size of the current range")
    .mode(optionparser::store_true);
 
-  p.add_option("--version")
+  p.add_option("--version", "-V")
    .help("prints out current version of ldb");
 
   return p;
