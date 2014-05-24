@@ -155,6 +155,8 @@ void ldb::startREPL() {
         }
         cout << msg << cmd.rest << endl;
         key_limit = atoi(cmd.rest.c_str());
+
+        ldb::range("", true);
         break;
       }
 
