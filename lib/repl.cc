@@ -171,6 +171,7 @@ void ldb::startREPL(leveldb::DB* db) {
         break;
 
       default:
+        if (l == "") break;
         cout << "unknown: " << l << endl;
         break;
     }

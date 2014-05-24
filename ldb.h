@@ -49,8 +49,8 @@ namespace ldb {
   void startREPL(leveldb::DB* db);
   void auto_completion(const char *buf, linenoiseCompletions *lc);
   void put_value(leveldb::DB* db, string key, string value);
-  void get_value(leveldb::DB* db, const command& cmd);
-  void del_value(leveldb::DB* db, const command& cmd);
+  void get_value(leveldb::DB* db, string key);
+  void del_value(leveldb::DB* db, string key);
   void get_size(leveldb::DB* db);
   void range(leveldb::DB *db, bool surpress_output);
   command parse_cmd(const string& line, const vector<cDef>& cmds);
