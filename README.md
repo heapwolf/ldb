@@ -30,7 +30,7 @@ ldb -h
 ## KEY AUTO-COMPLETE
 `ldb` will get the first n (as defined in `LIMIT`) records and make them
 available for autocomplete. If the limit is redefined, the cache will be
-refreshed when the `LS` command is used.
+refreshed to reflect the new range.
 
 When possible, hitting tab will allow you to cycle though keys that match
 your partial input. Also, if there is a partial match it will be highlighted 
