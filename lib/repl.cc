@@ -19,7 +19,7 @@
 vector<ldb::cDef> ldb::cmds = {
   { GET,   "get",   "g",  "get a key from the database" },
   { PUT,   "put",   "p",  "put a key/value into the database" },
-  { DEL,   "del",   "d",  "delete a key/value from the database" },
+  { DEL,   "del",   "rm",  "delete a key/value from the database" },
   { LS,    "keys",  "ls", "list the keys in the current range" },
   { START, "start", "gt", "set the upper bound of the current range" },
   { END,   "end",   "lt", "set the lower bound of the current range" },
