@@ -39,6 +39,9 @@ in the results.
 ![img](/man/colors.png)
 
 ## COMMANDS
+You can `get`, `put` or `del` a single key at any time. Many of the following
+commands help you to create `ranges` so that you can casually explore smaller
+sets of data.
 
 Get a key's value
 ```bash
