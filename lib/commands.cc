@@ -3,7 +3,7 @@
 //
 //
 //
-void ldb::put_value(leveldb::DB* db, string key, string value)
+void ldb::put_value(string key, string value)
 {
   leveldb::WriteOptions writeOptions;
   leveldb::Status status;
@@ -16,7 +16,7 @@ void ldb::put_value(leveldb::DB* db, string key, string value)
 //
 //
 //
-void ldb::get_value(leveldb::DB* db, string key)
+void ldb::get_value(string key)
 {
   string value;
   leveldb::Status status = db->Get(leveldb::ReadOptions(), key, &value);
@@ -32,7 +32,7 @@ void ldb::get_value(leveldb::DB* db, string key)
 //
 //
 //
-void ldb::del_value(leveldb::DB* db, string key)
+void ldb::del_value(string key)
 {
   leveldb::WriteOptions writeOptions;
   leveldb::Status status;
@@ -46,8 +46,19 @@ void ldb::del_value(leveldb::DB* db, string key)
 //
 //
 //
-void ldb::range(leveldb::DB* db, bool surpress_output)
+bool replace(std::string& str, const std::string& from, const std::string& to) {
+  size_t start_pos = str.find(from);
+  if (start_pos == std::string::npos) return false;
+  str.replace(start_pos, from.length(), to);
+  return true;
+}
+
+//
+//
+//
+void ldb::range(string prefix, bool surpress_output)
 {
+  cout << "\r\n";
   struct winsize term;
   ioctl(0, TIOCGWINSZ, &term);
 
@@ -57,6 +68,9 @@ void ldb::range(leveldb::DB* db, bool surpress_output)
   int maxWidth = 0;
   int maxColumns = 0;
   int padding = 2;
+
+  string hi_start = "\033[1;31m";
+  string hi_end = "\033[0m";
 
   leveldb::Iterator* itr = db->NewIterator(leveldb::ReadOptions());
 
@@ -72,6 +86,7 @@ void ldb::range(leveldb::DB* db, bool surpress_output)
 
   maxWidth += padding;
   maxColumns = term.ws_col / maxWidth;
+  int colSize = maxWidth + hi_start.length() + hi_end.length();
 
   for (itr->Seek(key_start); itr->Valid(); itr->Next()) {
 
@@ -89,22 +104,25 @@ void ldb::range(leveldb::DB* db, bool surpress_output)
 
       if (count == key_limit + 1) break;
 
-      cout << setw(maxWidth) << left << sKey;
+      int replaced = replace(sKey, prefix, hi_start + prefix + hi_end);
+
+      cout << setw(replaced ? colSize : maxWidth) << left << sKey;
+
       if (count == maxColumns - 1) {
         count = 0;
-        cout << endl;
+        cout << "\r\n";
       }
     }
   }
 
-  cout << endl;
+  cout << "\r\n";
   delete itr;
 }
 
 //
 //
 //
-void ldb::get_size(leveldb::DB* db)
+void ldb::get_size()
 {
   leveldb::Range ranges[1]; // we only keep one range, maybe allow more?
   ranges[0] = leveldb::Range(key_start, key_end);

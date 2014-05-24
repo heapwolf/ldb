@@ -33,6 +33,7 @@ vector<ldb::cDef> ldb::cmds = {
 //
 void ldb::auto_completion(const char *buf, linenoiseCompletions *lc)
 {
+  cout << endl;
   string line(buf);
   //
   // this should actually search to find out if the thing
@@ -45,8 +46,10 @@ void ldb::auto_completion(const char *buf, linenoiseCompletions *lc)
 
   int pos = m.position() + m.length();
   if (pos >= line.length()) return;
-  string rest = line.substr(pos + 1);
+  string rest = line.substr(pos);
   string prefix = line.substr(0, pos);
+
+  ldb::range(rest, false);
 
   for (auto & key : ldb::key_cache) {
     size_t index = key.find(rest);
@@ -95,14 +98,14 @@ vector<string> ldb::parse_rest(const string& rest)
   return parts;
 }
 
-void ldb::startREPL(leveldb::DB* db) {
+void ldb::startREPL() {
 
   char *line = NULL;
 
   linenoiseSetCompletionCallback(ldb::auto_completion);
   linenoiseHistoryLoad(HISTORY_FILE);
 
-  ldb::range(db, true);
+  ldb::range("", true);
 
   while ((line = linenoise("> "))) {
 
@@ -113,24 +116,24 @@ void ldb::startREPL(leveldb::DB* db) {
 
     switch (cmd.id) {
       case GET: {
-        ldb::get_value(db, cmd.rest);
+        ldb::get_value(cmd.rest);
         break;
       }
 
       case PUT: {
         vector<string> pair = parse_rest(cmd.rest);
         leveldb::WriteOptions writeOptions;
-        ldb::put_value(db, pair[0], pair[1]);
+        ldb::put_value(pair[0], pair[1]);
         break;
       }
 
       case DEL: {
-        ldb::del_value(db, cmd.rest);
+        ldb::del_value(cmd.rest);
         break;
       }
 
       case LS:
-        ldb::range(db, false);
+        ldb::range("", false);
         break;
 
       case START:
@@ -156,7 +159,7 @@ void ldb::startREPL(leveldb::DB* db) {
       }
 
       case SIZE:
-        ldb::get_size(db);
+        ldb::get_size();
         break;
 
       case HELP:

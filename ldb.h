@@ -39,6 +39,7 @@ namespace ldb {
     string desc;
   };
 
+  extern leveldb::DB *db;
   extern vector<cDef> cmds;
 
   extern vector<string> key_cache;
@@ -46,13 +47,13 @@ namespace ldb {
   extern string key_end;
   extern int key_limit;
 
-  void startREPL(leveldb::DB* db);
+  void startREPL();
   void auto_completion(const char *buf, linenoiseCompletions *lc);
-  void put_value(leveldb::DB* db, string key, string value);
-  void get_value(leveldb::DB* db, string key);
-  void del_value(leveldb::DB* db, string key);
-  void get_size(leveldb::DB* db);
-  void range(leveldb::DB *db, bool surpress_output);
+  void put_value(string key, string value);
+  void get_value(string key);
+  void del_value(string key);
+  void get_size();
+  void range(string prefix, bool surpress_output);
   command parse_cmd(const string& line, const vector<cDef>& cmds);
   vector<string> parse_rest(const string& rest);
 }

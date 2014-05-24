@@ -23,13 +23,17 @@ vector<string> ldb::key_cache;
 int ldb::key_limit = 1000;
 
 //
+// the database instance
+//
+leveldb::DB* ldb::db;
+
+//
 // main determines if the REPL should be launched or
 // if the user wants to perform a cli command.
 //
 int main(int argc, const char** argv)
 {
   bool interactive = false;
-  leveldb::DB* db;
   leveldb::Options options;
   optionparser::parser p;
 
@@ -103,7 +107,7 @@ int main(int argc, const char** argv)
     options.error_if_exists = true;
   }
 
-  leveldb::Status status = leveldb::DB::Open(options, path, &db);
+  leveldb::Status status = leveldb::DB::Open(options, path, &ldb::db);
 
   if (!status.ok()) {
     cerr << status.ToString() << endl;
@@ -111,8 +115,8 @@ int main(int argc, const char** argv)
   }
 
   if (interactive) {
-    ldb::startREPL(db);
-    delete db;
+    ldb::startREPL();
+    delete ldb::db;
     return 0;
   }
 
@@ -129,25 +133,26 @@ int main(int argc, const char** argv)
   }
 
   if (p.get_value("get")) {
-    ldb::get_value(db, p.get_value<string>("get"));
+    ldb::get_value(p.get_value<string>("get"));
   }
   else if (p.get_value("put") && p.get_value("value")) {
 
     string key = p.get_value<string>("put");
     string value = p.get_value<string>("value");
-    ldb::put_value(db, key, value);
+    ldb::put_value(key, value);
   }
   else if (p.get_value("del")) {
-    ldb::del_value(db, p.get_value<string>("del"));
+    ldb::del_value(p.get_value<string>("del"));
   }
   else if (p.get_value("keys")) {
-    ldb::range(db, false);
+    
+    ldb::range("", false);
   }
   else if (p.get_value("size")) {
-    ldb::get_size(db);
+    ldb::get_size();
   }
 
-  delete db;
+  delete ldb::db;
   return 0;
 }
 
