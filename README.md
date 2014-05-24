@@ -64,3 +64,8 @@ Set the limit for the current range
 >limit <number>
 ```
 
+Get the size of the the current range (in bytes)
+```bash
+>size
+```
+
