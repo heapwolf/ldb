@@ -69,3 +69,9 @@ Get the size of the the current range (in bytes)
 >size
 ```
 
+# AUTOMATIC SUGGESTIONS
+When possible, hitting tab will allow you to cycle though keys that match your partial imput.
+Also, the partial match will be highlighted in the results above the current line.
+
+![img](/man/colors.png)
+
