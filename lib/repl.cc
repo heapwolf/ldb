@@ -42,11 +42,10 @@ void ldb::auto_completion(const char *buf, linenoiseCompletions *lc)
   smatch m;
 
   regex_search(line, m, e);
-  if (m.empty()) return;
 
   int pos = m.position() + m.length();
+  if (pos >= line.length()) return;
   string rest = line.substr(pos + 1);
-  if (rest.length() < 1) return;
   string prefix = line.substr(0, pos);
 
   for (auto & key : ldb::key_cache) {
