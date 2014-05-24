@@ -2,7 +2,7 @@
 #include "deps/cmd-parser/include/parser.hh"
 
 //
-// start and end values define the current range, by 
+// start and end values define the current range, by
 // default, empty values will yield all values until
 // the key_limit is reached.
 //
@@ -28,13 +28,10 @@ int ldb::key_limit = 1000;
 leveldb::DB* ldb::db;
 
 //
-// main determines if the REPL should be launched or
-// if the user wants to perform a cli command.
+// command line options defined in this function
 //
-int main(int argc, const char** argv)
+optionparser::parser create_options_parser()
 {
-  bool interactive = false;
-  leveldb::Options options;
   optionparser::parser p;
 
   p.add_option("--interactive", "-i")
@@ -85,6 +82,22 @@ int main(int argc, const char** argv)
    .help("get the size of the current range")
    .mode(optionparser::store_true);
 
+  p.add_option("--version")
+   .help("prints out current version of ldb");
+
+  return p;
+}
+
+//
+// main determines if the REPL should be launched or
+// if the user wants to perform a cli command.
+//
+int main(int argc, const char** argv)
+{
+  bool interactive = false;
+  leveldb::Options options;
+  optionparser::parser p = create_options_parser();
+
   string path;
   p.eat_arguments(argc, argv);
 
@@ -92,9 +105,13 @@ int main(int argc, const char** argv)
     interactive = true;
     path = p.get_value<string>("interactive");
   }
+  else if (p.get_value("version")) {
+    cout << LDB_VERSION << endl;
+    return 0;
+  }
   else if (!argv[1] || argv[1][0] == '-') {
     cerr << "A path is required" << endl;
-    return -1;
+    return 1;
   }
   else {
     path = argv[1];
@@ -111,12 +128,11 @@ int main(int argc, const char** argv)
 
   if (!status.ok()) {
     cerr << status.ToString() << endl;
-    return -1;
+    return 1;
   }
 
   if (interactive) {
     ldb::startREPL();
-    delete ldb::db;
     return 0;
   }
 
@@ -145,14 +161,12 @@ int main(int argc, const char** argv)
     ldb::del_value(p.get_value<string>("del"));
   }
   else if (p.get_value("keys")) {
-    
     ldb::range("", false);
   }
   else if (p.get_value("size")) {
     ldb::get_size();
   }
 
-  delete ldb::db;
   return 0;
 }
 
