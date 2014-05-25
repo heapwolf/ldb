@@ -1,0 +1,166 @@
+.\" Generated with Ronnjs 0.4.0
+.\" http://github.com/kapouer/ronnjs
+.
+.TH "LDB" "1" "May 2014" "" ""
+.
+.SH "NAME"
+\fBldb\fR \-\- Explore and manage leveldb instances
+.
+.SH "SYNOPSIS"
+\fBldb\fR [\-hV] [options]
+.
+.SH "OPTIONS"
+  \fB\-\-help, \-h\fR
+      output help information
+.
+.P
+  \fB\-\-version, \-V\fR
+      prints out current version of ldb
+.
+.P
+  \fB\-\-interactive, \-i\fR
+      interactive mode (REPL)
+.
+.P
+  \fB\-\-get, \-g\fR
+      a string that represents a key
+.
+.P
+  \fB\-\-put, \-p\fR
+      put a key and value pair into the database (requires \-\-value <string>)
+.
+.P
+  \fB\-\-value, \-v\fR
+      put a key and value into the database (requires \-\-put <string>)
+.
+.P
+  \fB\-\-del, \-d\fR
+      delete a key and value from the database
+.
+.P
+  \fB\-\-keys, \-k\fR
+      list the keys in the current range
+.
+.P
+  \fB\-\-start, \-s\fR
+      specify the start of the current range
+.
+.P
+  \fB\-\-end, \-e\fR
+      specify the end of the current range
+.
+.P
+  \fB\-\-limit, \-l\fR
+      limit the number of keys in the current range
+.
+.P
+  \fB\-\-create, \-c\fR
+      create the database if one does not exist
+.
+.P
+  \fB\-\-error\fR
+      throw an error if the databse does not exist
+.
+.P
+  \fB\-\-size\fR
+      get the size of the current range
+.
+.SH "USAGE"
+  Open an existing database with interactive mode (REPL) and create the database if it
+  does not exist with optional flag \fB\-c\fR
+.
+.P
+  \fB
+  $ ldb \-i \./testdb \-c
+  \fR
+.
+.SH "KEY AUTO\-COMPLETE"
+  \fBldb\fR will get the first n (as defined in \fBLIMIT\fR) records and make them available
+  for autocomplete\. If the limit is redefined, the cache will be refreshed to reflect the
+  new range\.
+.
+.P
+  When possible, hitting tab will allow you to cycle though keys that match your partial
+  input\. Also, if there is a partial match it will be highlighted in the results\.
+.
+.SH "REPL COMMANDS"
+  You can \fBget\fR, \fBput\fR or \fBdel\fR a single key at any time\. Many of the following commands
+  help you to create ranges so that you can casually explore smaller sets of data\.
+.
+.P
+  Get a key\'s value:
+.
+.P
+  \fB
+  >get <keyname>
+  \fR
+.
+.P
+  Put a value to a key:
+.
+.P
+  \fB
+  >put <keyname>;<value>
+  \fR
+.
+.P
+  List the keys in the curent range:
+.
+.P
+  \fB
+  >ls
+  \fR
+.
+.P
+  Set the start of the current range:
+.
+.P
+  \fB
+  >start <string>
+  \fR
+.
+.P
+  Set the end of the current range:
+.
+.P
+  \fB
+  >end <string>
+  \fR
+.
+.P
+  Set the limit for the current range:
+.
+.P
+  \fB
+  >limit <number>
+  \fR
+.
+.P
+  Get the size of the the current range (in bytes):
+.
+.P
+  \fB
+  >size
+  \fR
+.
+.SH "AUTHOR"
+.
+.IP "\(bu" 4
+Paolo Fragomeni \fI<paolo@async\.ly\fR>
+.
+.IP "\(bu" 4
+Lars\-Magnus Skog \fI<ralphtheninja@riseup\.net\fR>
+.
+.IP "\(bu" 4
+Joseph Werle \fI<joseph\.werle@gmail\.com\fR>
+.
+.IP "" 0
+.
+.SH "REPORTING BUGS"
+  <\fIhttps://github\.com/hij1nx/ldb/issues\fR>
+.
+.SH "SEE ALSO"
+  <\fIhttps://github\.com/jwerle/libbeaufort\fR>
+.
+.SH "LICENSE"
+Distributed with the MIT license\.

@@ -3,10 +3,18 @@
   "version": "0.0.1",
   "repo": "hij1nx/ldb",
   "description": "A c++ repl for leveldb",
-  "keywords": [ "leveldb", "repl", "level", "db" ],
+  "keywords": [
+    "leveldb",
+    "repl",
+    "level",
+    "db"
+  ],
   "license": "MIT",
   "install": "make install",
   "dependencies": {
     "linenoise": "*"
+  },
+  "devDependencies": {
+    "ronn": "^0.4.0"
   }
 }
