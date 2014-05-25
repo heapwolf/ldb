@@ -1,4 +1,4 @@
-![img](/man/logo.svg)
+![img](/man/logo.png)
 
 # SYNOPSIS
 A c++ repl for leveldb
