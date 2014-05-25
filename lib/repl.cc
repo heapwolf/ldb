@@ -8,7 +8,8 @@
 #define END 6
 #define LIMIT 7
 #define SIZE 8
-#define HELP 9
+#define FIND 9
+#define HELP 10
 
 #define HISTORY_FILE ".ldb_history"
 
@@ -25,6 +26,7 @@ vector<ldb::cDef> ldb::cmds = {
   { END,   "end",   "lt", "set the lower bound of the current range" },
   { LIMIT, "limit", "l",  "set the limit of the current range" },
   { SIZE,  "size",  "s",  "determine the size of the current range (in bytes)" },
+  { FIND,  "find",  "in",  "execute an expression against the current range" },
   { HELP,  "help",  "h",  "print this list of REPL commands" }
 };
 
@@ -85,13 +87,13 @@ ldb::command ldb::parse_cmd(const string& line, const vector<cDef>& cmds)
 // duh, this is obviously too simple for most,
 // cases, keys could easily have `;` in them.
 //
-vector<string> ldb::parse_rest(const string& rest)
+vector<string> ldb::parse_rest(const string& rest, const char& splitter)
 {
   vector<string> parts;
   istringstream stream(rest);
   string part;
 
-  while (getline(stream, part, ';')) {
+  while (getline(stream, part, splitter)) {
     parts.push_back(part);
   }
 
@@ -121,8 +123,7 @@ void ldb::startREPL() {
       }
 
       case PUT: {
-        vector<string> pair = parse_rest(cmd.rest);
-        leveldb::WriteOptions writeOptions;
+        vector<string> pair = parse_rest(cmd.rest, ';');
         ldb::put_value(pair[0], pair[1]);
         break;
       }
@@ -163,6 +164,20 @@ void ldb::startREPL() {
       case SIZE:
         ldb::get_size();
         break;
+
+      case FIND: {
+
+        vector<string> parts = parse_rest(cmd.rest, ' ');
+
+        if (parts.size() == 2) {
+          ldb::find(parts[1], parts[0] == "keys" ? 0 : 1);
+        }
+        else {
+          ldb::find(cmd.rest, 0);
+        }
+
+        break;
+      }
 
       case HELP:
 

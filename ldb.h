@@ -50,6 +50,7 @@ namespace ldb {
   extern int key_limit;
 
   void startREPL();
+  void find(string exp, int type);
   void auto_completion(const char *buf, linenoiseCompletions *lc);
   void put_value(string key, string value);
   void get_value(string key);
@@ -57,7 +58,7 @@ namespace ldb {
   void get_size();
   void range(string prefix, bool surpress_output);
   command parse_cmd(const string& line, const vector<cDef>& cmds);
-  vector<string> parse_rest(const string& rest);
+  vector<string> parse_rest(const string& rest, const char& splitter);
 }
 
 #endif // LDB_H_

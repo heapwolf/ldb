@@ -58,6 +58,13 @@ List the keys in the curent range
 >ls
 ```
 
+Find string in keys or values using a regex
+```bash
+>in keys foo
+>in values bla
+>in values \w, world
+```
+
 Set the start of the current range
 ```bash
 >start <string>

@@ -1,5 +1,18 @@
 #include "../ldb.h"
 
+string hi_start = "\033[1;31m";
+string hi_end = "\033[0m";
+
+//
+//
+//
+bool replace(std::string& str, const std::string& from, const std::string& to) {
+  size_t start_pos = str.find(from);
+  if (start_pos == std::string::npos) return false;
+  str.replace(start_pos, from.length(), to);
+  return true;
+}
+
 //
 //
 //
@@ -46,11 +59,55 @@ void ldb::del_value(string key)
 //
 //
 //
-bool replace(std::string& str, const std::string& from, const std::string& to) {
-  size_t start_pos = str.find(from);
-  if (start_pos == std::string::npos) return false;
-  str.replace(start_pos, from.length(), to);
-  return true;
+void ldb::find(string exp, int type)
+{
+  cout << "\r\n";
+  regex e(exp);
+
+  leveldb::Iterator* itr = db->NewIterator(leveldb::ReadOptions());
+
+  for (itr->Seek(key_start); itr->Valid(); itr->Next()) {
+    leveldb::Slice key = itr->key();
+    leveldb::Slice value = itr->value();
+
+    string sKey = key.ToString();
+
+    if (sKey == key_end) break;
+
+    string sValue = value.ToString();
+    string subject = type == 0 ? sKey : sValue;
+    string output;
+    smatch m;
+
+    regex_search(subject, m, e);
+
+    if (m.length()) {
+
+      string s = subject.substr(m.position(), m.length());
+      replace(subject, s, hi_start + s + hi_end);
+
+      if (type == 1) { // fancy truncate value output
+
+        int padding = hi_start.length() + hi_end.length() + 20;
+        int substart = m.position() - padding;
+        int matchlen = m.length() + padding * 2;
+        int subend = matchlen;
+
+        if (substart <= 0) substart = 0;
+        if (subend >= subject.length()) subend = subject.length();
+
+        string partial = subject.substr(substart, matchlen);
+        output = sKey + ": ..." + partial + "...\r\n";
+      }
+      else {
+        output = subject + "\r\n";
+      }
+      cout << output << endl;
+    }
+  }
+
+  cout << "\r\n";
+  delete itr;
 }
 
 //
@@ -69,16 +126,17 @@ void ldb::range(string prefix, bool surpress_output)
   int maxColumns = 0;
   int padding = 2;
 
-  string hi_start = "\033[1;31m";
-  string hi_end = "\033[0m";
-
   leveldb::Iterator* itr = db->NewIterator(leveldb::ReadOptions());
 
   for (itr->Seek(key_start); itr->Valid(); itr->Next()) {
     leveldb::Slice key = itr->key();
     leveldb::Slice value = itr->value();
 
-    int len = key.ToString().length();
+    string sKey = key.ToString();
+
+    if (sKey == key_end) break;
+
+    int len = sKey.length();
     if (len > maxWidth) {
       maxWidth = len;
     }

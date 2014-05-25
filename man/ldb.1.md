@@ -1,7 +1,7 @@
 ldb(1) -- Explore and manage leveldb instances
 =================================
 
-## SYNOPSIS
+## USAGE
 
 `ldb` \[-hV\] \[options\]
 
@@ -49,8 +49,7 @@ ldb(1) -- Explore and manage leveldb instances
   `--size`
       get the size of the current range
 
-
-## USAGE
+## EXAMPLES
 
   Open an existing database with interactive mode (REPL) and create the database if it
   does not exist with optional flag `-c`
@@ -58,6 +57,8 @@ ldb(1) -- Explore and manage leveldb instances
   ```
   $ ldb -i ./testdb -c
   ```
+
+
 
 ## KEY AUTO-COMPLETE
 
@@ -128,8 +129,9 @@ ldb(1) -- Explore and manage leveldb instances
 
 ## SEE ALSO
 
-  <<https://github.com/jwerle/libbeaufort>>
+  <<http://code.google.com/p/leveldb/>>
 
 ## LICENSE
 
 Distributed with the MIT license.
+
