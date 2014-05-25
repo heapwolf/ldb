@@ -1,3 +1,5 @@
+![img](/man/logo.svg)
+
 # SYNOPSIS
 A c++ repl for leveldb
 
@@ -60,9 +62,8 @@ List the keys in the curent range
 
 Find string in keys or values using a regex
 ```bash
->in keys foo
->in values bla
->in values \w, world
+>in keys <regex>
+>in values <regex>
 ```
 
 Set the start of the current range
