@@ -1,11 +1,11 @@
 ldb(1) -- Explore and manage leveldb instances
 =================================
 
-## USAGE
+## SYNOPSIS
 
-`ldb` \[-hV\] \[options\]
+`ldb` \[-h|V\] \[-i\] pathname \[options\]
 
-## OPTIONS
+## DESCRIPTION
 
   `--help, -h`
       output help information
@@ -49,16 +49,55 @@ ldb(1) -- Explore and manage leveldb instances
   `--size`
       get the size of the current range
 
+
 ## EXAMPLES
 
   Open an existing database with interactive mode (REPL) and create the database if it
-  does not exist with optional flag `-c`
+  does not exist with optional flag `-c`:
 
   ```
   $ ldb -i ./testdb -c
   ```
 
+  Insert a key/value pair:
+  ```
+  $ ldb ./db --put foo --value bar
+  ```
 
+  Get a value:
+  ```
+  $ ldb ./db --get foo
+  ```
+
+  Delete a value:
+  ```
+  $ ldb ./db --del foo
+  ```
+
+  List all keys in the database:
+  ```
+  $ ldb ./db --keys
+  ```
+
+  List the ten first keys in the database:
+  ```
+  $ ldb ./db --keys --limit 10
+  ```
+
+  List all keys starting with `foo`:
+  ```
+  $ ldb ./db --keys --start foo
+  ```
+
+  List all keys up to (not including) `bar`:
+  ```
+  $ ldb ./db --keys --end bar
+  ```
+
+  Obviously you can do combinations:
+  ```
+  $ ldb ./db --keys --start foo --end bar --limit 5
+  ```
 
 ## KEY AUTO-COMPLETE
 
@@ -125,11 +164,14 @@ ldb(1) -- Explore and manage leveldb instances
 
 ## REPORTING BUGS
 
-  <<https://github.com/hij1nx/ldb/issues>>
+  * <https://github.com/hij1nx/ldb/issues>
 
 ## SEE ALSO
 
-  <<http://code.google.com/p/leveldb/>>
+  * <http://code.google.com/p/leveldb/>
+  * <https://github.com/hij1nx/lev>
+  * <https://github.com/antirez/linenoise>
+  * <https://github.com/lukedeo/cmd-parser>
 
 ## LICENSE
 

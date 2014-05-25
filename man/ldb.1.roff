@@ -7,9 +7,9 @@
 \fBldb\fR \-\- Explore and manage leveldb instances
 .
 .SH "SYNOPSIS"
-\fBldb\fR [\-hV] [options]
+\fBldb\fR [\-h|V] [\-i] pathname [options]
 .
-.SH "OPTIONS"
+.SH "DESCRIPTION"
   \fB\-\-help, \-h\fR
       output help information
 .
@@ -65,13 +65,61 @@
   \fB\-\-size\fR
       get the size of the current range
 .
-.SH "USAGE"
+.SH "EXAMPLES"
   Open an existing database with interactive mode (REPL) and create the database if it
-  does not exist with optional flag \fB\-c\fR
+  does not exist with optional flag \fB\-c\fR:
 .
 .P
   \fB
   $ ldb \-i \./testdb \-c
+  \fR
+.
+.P
+  Insert a key/value pair:
+  \fB
+  $ ldb \./db \-\-put foo \-\-value bar
+  \fR
+.
+.P
+  Get a value:
+  \fB
+  $ ldb \./db \-\-get foo
+  \fR
+.
+.P
+  Delete a value:
+  \fB
+  $ ldb \./db \-\-del foo
+  \fR
+.
+.P
+  List all keys in the database:
+  \fB
+  $ ldb \./db \-\-keys
+  \fR
+.
+.P
+  List the ten first keys in the database:
+  \fB
+  $ ldb \./db \-\-keys \-\-limit 10
+  \fR
+.
+.P
+  List all keys starting with \fBfoo\fR:
+  \fB
+  $ ldb \./db \-\-keys \-\-start foo
+  \fR
+.
+.P
+  List all keys up to (not including) \fBbar\fR:
+  \fB
+  $ ldb \./db \-\-keys \-\-end bar
+  \fR
+.
+.P
+  Obviously you can do combinations:
+  \fB
+  $ ldb \./db \-\-keys \-\-start foo \-\-end bar \-\-limit 5
   \fR
 .
 .SH "KEY AUTO\-COMPLETE"
@@ -157,10 +205,27 @@ Joseph Werle \fI<joseph\.werle@gmail\.com\fR>
 .IP "" 0
 .
 .SH "REPORTING BUGS"
-  <\fIhttps://github\.com/hij1nx/ldb/issues\fR>
+.
+.IP "\(bu" 4
+\fIhttps://github\.com/hij1nx/ldb/issues\fR
+.
+.IP "" 0
 .
 .SH "SEE ALSO"
-  <\fIhttps://github\.com/jwerle/libbeaufort\fR>
+.
+.IP "\(bu" 4
+\fIhttp://code\.google\.com/p/leveldb/\fR
+.
+.IP "\(bu" 4
+\fIhttps://github\.com/hij1nx/lev\fR
+.
+.IP "\(bu" 4
+\fIhttps://github\.com/antirez/linenoise\fR
+.
+.IP "\(bu" 4
+\fIhttps://github\.com/lukedeo/cmd\-parser\fR
+.
+.IP "" 0
 .
 .SH "LICENSE"
 Distributed with the MIT license\.
