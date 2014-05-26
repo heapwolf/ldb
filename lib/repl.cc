@@ -27,7 +27,7 @@ vector<ldb::cDef> ldb::cmds = {
   { LIMIT, "limit", "l",  "set the limit of the current range" },
   { SIZE,  "size",  "s",  "determine the size of the current range (in bytes)" },
   { FIND,  "find",  "in",  "execute an expression against the current range" },
-  { HELP,  "help",  "h",  "print this list of REPL commands" }
+  { HELP,  "help",  "?",  "print this list of REPL commands" }
 };
 
 //

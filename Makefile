@@ -4,6 +4,8 @@ LIBPATH ?= ./lib
 SRC = ldb.cc $(LIBPATH)/*.cc 
 PREFIX ?= /usr/local
 LEVELDBPATH ?= ./deps/leveldb
+SNAPPYPATH ?= /usr/local/lib
+LIBSNAPPY ?= $(SNAPPYPATH)/libsnappy.a
 LIBLEVELDB ?= $(LEVELDBPATH)/libleveldb.a
 CXXFLAGS += -I$(LEVELDBPATH)/include -std=gnu++11
 
@@ -24,7 +26,7 @@ leveldb:
 	$(MAKE) -C $(LEVELDBPATH)
 
 $(BIN): $(DEPS) $(LIBPATH)/*.cc
-	$(CXX) -o $(BIN) $(SRC) $(CXXFLAGS) -lpthread $(LIBLEVELDB) $(DEPS:=.o)
+	$(CXX) -o $(BIN) $(SRC) $(CXXFLAGS) -lpthread $(LIBLEVELDB) $(LIBSNAPPY) $(DEPS:=.o)
 
 $(DEPS):
 	$(CC) -c $(DEPPATH)/$(@)/*.c

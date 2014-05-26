@@ -82,6 +82,10 @@ optionparser::parser create_options_parser()
    .help("get the size of the current range")
    .mode(optionparser::store_true);
 
+  p.add_option("--nocompression")
+   .help("turn off snappy conpression")
+   .mode(optionparser::store_true);
+
   p.add_option("--version", "-V")
    .help("prints out current version of ldb");
 
@@ -96,6 +100,7 @@ int main(int argc, const char** argv)
 {
   bool interactive = false;
   leveldb::Options options;
+  options.compression = leveldb::kSnappyCompression;
   optionparser::parser p = create_options_parser();
 
   string path;
@@ -122,6 +127,9 @@ int main(int argc, const char** argv)
   }
   if (p.get_value("error")) {
     options.error_if_exists = true;
+  }
+  if (p.get_value("nocompression")) {
+    options.compression = leveldb::kNoCompression;
   }
 
   leveldb::Status status = leveldb::DB::Open(options, path, &ldb::db);
