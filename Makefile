@@ -1,11 +1,11 @@
 CXX ?= g++
 BIN ?= ldb
 LIBPATH ?= ./lib
-SRC = ldb.cc $(LIBPATH)/*.cc 
+SRC = ldb.cc $(LIBPATH)/*.cc
 PREFIX ?= /usr/local
 LEVELDBPATH ?= ./deps/leveldb
-SNAPPYPATH ?= /usr/local/lib
-LIBSNAPPY ?= $(SNAPPYPATH)/libsnappy.a
+SNAPPYPATH ?= ./deps/snappy-1.1.1
+LIBSNAPPY ?= $(SNAPPYPATH)/.libs/libsnappy.a
 LIBLEVELDB ?= $(LEVELDBPATH)/libleveldb.a
 CXXFLAGS += -I$(LEVELDBPATH)/include -std=gnu++11
 
@@ -20,10 +20,13 @@ endif
 
 export CXXFLAGS
 
-all: leveldb $(BIN)
+all: leveldb snappy $(BIN)
 
 leveldb:
 	$(MAKE) -C $(LEVELDBPATH)
+
+snappy:
+	$(MAKE) -C $(SNAPPYPATH)
 
 $(BIN): $(DEPS) $(LIBPATH)/*.cc
 	$(CXX) -o $(BIN) $(SRC) $(CXXFLAGS) -lpthread $(LIBLEVELDB) $(LIBSNAPPY) $(DEPS:=.o)
@@ -35,6 +38,7 @@ clean:
 	rm -f $(BIN)
 	rm -f $(DEPPATH)/{$(DEPS)}/*.o
 	$(MAKE) clean -C $(LEVELDBPATH)
+	$(MAKE) clean -C $(SNAPPYPATH)
 
 install: all install-manpages
 	install $(BIN) $(PREFIX)/bin
