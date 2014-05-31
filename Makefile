@@ -28,6 +28,9 @@ leveldb:
 snappy:
 	$(MAKE) -C $(SNAPPYPATH)
 
+configure:
+	cd $(SNAPPYPATH) && ./autogen.sh && ./configure
+
 $(BIN): $(DEPS) $(LIBPATH)/*.cc
 	$(CXX) -o $(BIN) $(SRC) $(CXXFLAGS) -lpthread $(LIBLEVELDB) $(LIBSNAPPY) $(DEPS:=.o)
 
