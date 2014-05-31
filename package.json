@@ -1,6 +1,6 @@
 {
   "name": "ldb",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "repo": "hij1nx/ldb",
   "description": "A c++ repl for leveldb",
   "keywords": [

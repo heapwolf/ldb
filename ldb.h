@@ -11,7 +11,7 @@
 #include <getopt.h>
 #include <sys/ioctl.h>
 
-#define LDB_VERSION "0.0.1"
+#define LDB_VERSION "0.0.2"
 
 extern "C" {
   #include "deps/linenoise/linenoise.h"
