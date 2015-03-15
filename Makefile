@@ -28,7 +28,6 @@ $(BIN): $(DEPS) $(LIBPATH)/*.cc
 	$(CXX) -o $(BIN) $(SRC) $(CXXFLAGS) -lpthread $(LIBLEVELDB) -lsnappy $(DEPS:=.o)
 
 $(DEPS):
-	mkdir deps
 	git clone --depth 1 git://github.com/lukedeo/cmd-parser.git ./deps/cmd-parser
 	git clone --depth 1 git://github.com/antirez/linenoise.git ./deps/linenoise
 	$(CC) -c $(DEPPATH)/$(@)/*.c
