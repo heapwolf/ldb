@@ -12,6 +12,7 @@ $ clib install hij1nx/ldb
 # BUILD
 
 ```cli
+$ brew install snappy # on linux `apt-get install libsnappy1` (i think)
 $ git clone https://github.com/hij1nx/ldb.git
 $ make install -C ldb
 ```

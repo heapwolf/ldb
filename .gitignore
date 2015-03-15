@@ -1,6 +1,5 @@
-deps/leveldb/libleveldb.so*
-deps/leveldb/libleveldb*
 *.o
 .ldb_history
 ldb
 node_modules/
+deps/

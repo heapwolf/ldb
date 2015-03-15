@@ -4,8 +4,6 @@ LIBPATH ?= ./lib
 SRC = ldb.cc $(LIBPATH)/*.cc
 PREFIX ?= /usr/local
 LEVELDBPATH ?= ./deps/leveldb
-SNAPPYPATH ?= ./deps/snappy-1.1.1
-LIBSNAPPY ?= $(SNAPPYPATH)/.libs/libsnappy.a
 LIBLEVELDB ?= $(LEVELDBPATH)/libleveldb.a
 CXXFLAGS += -I$(LEVELDBPATH)/include -std=gnu++11
 
@@ -20,28 +18,24 @@ endif
 
 export CXXFLAGS
 
-all: leveldb snappy $(BIN)
+all: leveldb $(BIN)
 
 leveldb:
-	$(MAKE) -C $(LEVELDBPATH)
-
-snappy:
-	$(MAKE) -C $(SNAPPYPATH)
-
-configure:
-	cd $(SNAPPYPATH) && ./autogen.sh && ./configure
+	git clone --depth 1 git://github.com/google/leveldb.git $(LEVELDBPATH)
+	make -C $(LEVELDBPATH)
 
 $(BIN): $(DEPS) $(LIBPATH)/*.cc
-	$(CXX) -o $(BIN) $(SRC) $(CXXFLAGS) -lpthread $(LIBLEVELDB) $(LIBSNAPPY) $(DEPS:=.o)
+	$(CXX) -o $(BIN) $(SRC) $(CXXFLAGS) -lpthread $(LIBLEVELDB) -lsnappy $(DEPS:=.o)
 
 $(DEPS):
+	mkdir deps
+	git clone --depth 1 git://github.com/lukedeo/cmd-parser.git ./deps/cmd-parser
+	git clone --depth 1 git://github.com/antirez/linenoise.git ./deps/linenoise
 	$(CC) -c $(DEPPATH)/$(@)/*.c
 
 clean:
-	rm -f $(BIN)
-	rm -f $(DEPPATH)/{$(DEPS)}/*.o
-	$(MAKE) clean -C $(LEVELDBPATH)
-	$(MAKE) clean -C $(SNAPPYPATH)
+	rm -rf $(BIN)
+	rm -rf $(DEPPATH)
 
 install: all install-manpages
 	install $(BIN) $(PREFIX)/bin
@@ -58,3 +52,4 @@ docs:
 
 test-docs:
 	make docs && sudo make install-manpages && man ldb
+

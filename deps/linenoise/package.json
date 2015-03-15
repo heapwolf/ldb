@@ -1,8 +1,0 @@
-{
-  "name": "linenoise",
-  "version": "0.0.0",
-  "description": "A small self-contained alternative to readline and libedit",
-  "repo": "clibs/linenoise",
-  "src": [ "linenoise.c", "linenoise.h" ],
-  "license": "BSD"
-}
