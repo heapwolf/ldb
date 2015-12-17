@@ -11,11 +11,22 @@ $ clib install hij1nx/ldb
 
 # BUILD
 
+## Mac OS X
+
 ```cli
-$ brew install snappy # on linux `apt-get install libsnappy1` (i think)
+$ brew install snappy
 $ git clone https://github.com/hij1nx/ldb.git
 $ make install -C ldb
 ```
+
+## Linux (Debian / others?)
+
+```cli
+$ apt-get install libsnappy-dev
+$ git clone https://github.com/hij1nx/ldb.git
+$ sudo make install
+```
+
 
 # USAGE
 Open an existing database with interactive mode (REPL) and create the
