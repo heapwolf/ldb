@@ -8,7 +8,7 @@ LIBLEVELDB ?= $(LEVELDBPATH)/libleveldb.a
 CXXFLAGS += -I$(LEVELDBPATH)/include -std=gnu++11
 
 DEPPATH ?= ./deps
-DEPS += ./linenoise
+DEPS += linenoise.o
 
 OS = $(shell uname)
 
@@ -20,17 +20,22 @@ export CXXFLAGS
 
 all: leveldb $(BIN)
 
-leveldb:
+$(LEVELDBPATH):
 	git clone --depth 1 git://github.com/google/leveldb.git $(LEVELDBPATH)
+leveldb: $(LEVELDBPATH)
 	make -C $(LEVELDBPATH)
 
-$(BIN): $(DEPS) $(LIBPATH)/*.cc
-	$(CXX) -o $(BIN) $(SRC) $(CXXFLAGS) -lpthread $(LIBLEVELDB) -lsnappy $(DEPS:=.o)
+$(BIN): $(DEPS) $(LIBPATH)/*.cc deps/cmd-parser
+	$(CXX) -o $(BIN) $(SRC) $(CXXFLAGS) -lpthread $(LIBLEVELDB) -lsnappy $(DEPS)
 
-$(DEPS):
+deps/cmd-parser:
 	git clone --depth 1 git://github.com/lukedeo/cmd-parser.git ./deps/cmd-parser
+
+deps/linenoise:
 	git clone --depth 1 git://github.com/antirez/linenoise.git ./deps/linenoise
-	$(CC) -c $(DEPPATH)/$(@)/*.c
+
+linenoise.o: deps/linenoise ./deps/linenoise/*.c
+	$(CC) -c deps/linenoise/*.c
 
 clean:
 	rm -rf $(BIN)
