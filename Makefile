@@ -4,7 +4,7 @@ LIBPATH ?= ./lib
 SRC = ldb.cc $(LIBPATH)/*.cc
 PREFIX ?= /usr/local
 LEVELDBPATH ?= ./deps/leveldb
-LIBLEVELDB ?= $(LEVELDBPATH)/libleveldb.a
+LIBLEVELDB ?= $(LEVELDBPATH)/out-static/libleveldb.a
 CXXFLAGS += -I$(LEVELDBPATH)/include -std=gnu++11
 
 DEPPATH ?= ./deps
