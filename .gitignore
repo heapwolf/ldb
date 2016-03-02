@@ -3,3 +3,8 @@
 ldb
 node_modules/
 deps/
+db/
+LOCK
+LOG
+LOG.old
+

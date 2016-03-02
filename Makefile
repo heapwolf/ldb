@@ -5,6 +5,7 @@ SRC = ldb.cc $(LIBPATH)/*.cc
 PREFIX ?= /usr/local
 LEVELDBPATH ?= ./deps/leveldb
 LIBLEVELDB ?= $(LEVELDBPATH)/out-static/libleveldb.a
+LIBSNAPPY ?= ./deps/snappy
 CXXFLAGS += -I$(LEVELDBPATH)/include -std=gnu++11
 
 DEPPATH ?= ./deps
@@ -13,6 +14,7 @@ DEPS += linenoise.o
 OS = $(shell uname)
 
 ifeq ($(OS), Darwin)
+	LIBTOOLIZE=glibtoolize
 	CXXFLAGS += -stdlib=libc++
 endif
 
@@ -26,7 +28,10 @@ leveldb: $(LEVELDBPATH)
 	make -C $(LEVELDBPATH)
 
 $(BIN): $(DEPS) $(LIBPATH)/*.cc deps/cmd-parser
-	$(CXX) -o $(BIN) $(SRC) $(CXXFLAGS) -lpthread $(LIBLEVELDB) -lsnappy $(DEPS)
+	$(CXX) -o $(BIN) $(SRC) $(CXXFLAGS) -lpthread -L/usr/local/include $(LIBLEVELDB) $(DEPS)
+
+deps/snappy:
+	git clone --depth 1 git://github.com/0x00A/snappy.git ./deps/snappy
 
 deps/cmd-parser:
 	git clone --depth 1 git://github.com/lukedeo/cmd-parser.git ./deps/cmd-parser
@@ -34,8 +39,15 @@ deps/cmd-parser:
 deps/linenoise:
 	git clone --depth 1 git://github.com/antirez/linenoise.git ./deps/linenoise
 
-linenoise.o: deps/linenoise ./deps/linenoise/*.c
+linenoise.o: deps/linenoise
 	$(CC) -c deps/linenoise/*.c
+
+./deps/snappy/snappy.o: deps/snappy
+	cd $(LIBSNAPPY) && \
+		./autogen.sh && \
+		./configure && \
+		make && \
+		make install
 
 clean:
 	rm -rf $(BIN)
