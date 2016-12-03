@@ -1,6 +1,6 @@
 {
   "name": "ldb",
-  "version": "0.0.2",
+  "version": "2.0.0",
   "repo": "hij1nx/ldb",
   "description": "A c++ repl for leveldb",
   "keywords": [
@@ -12,7 +12,8 @@
   "license": "MIT",
   "install": "make install",
   "dependencies": {
-    "linenoise": "*"
+    "linenoise": "*",
+    "docopt": "*"
   },
   "devDependencies": {
     "ronn": "^0.4.0"

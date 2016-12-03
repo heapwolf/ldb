@@ -1,5 +1,5 @@
 #include "ldb.h"
-#include "deps/cmd-parser/include/parser.hh"
+#include "deps/docopt/docopt.h"
 
 //
 // start and end values define the current range, by
@@ -28,69 +28,30 @@ int ldb::key_limit = 1000;
 leveldb::DB* ldb::db;
 
 //
-// command line options defined in this function
+// command line options
 //
-optionparser::parser create_options_parser()
-{
-  optionparser::parser p;
+static const char USAGE[] =
+R"(ldb
 
-  p.add_option("--interactive", "-i")
-   .help("interactive mode (REPL)")
-   .mode(optionparser::store_value);
+    Usage:
+      ldb <path> [--create] [--error] [--size] [--nocompress]
+      ldb <path> (del|get) <key>
+      ldb <path> put <key> <value> [--nocompress]
+      ldb <path> keys [--limit=<n>] [--lower=<lower>] [--upper=<upper>]
+      ldb (-h | --help)
+      ldb --version
 
-  p.add_option("--get", "-g")
-   .help("a string that represents a key")
-   .mode(optionparser::store_value);
-
-  p.add_option("--put", "-p")
-   .help("put a key and value pair into the database (requires --value <string>)")
-   .mode(optionparser::store_value);
-
-  p.add_option("--value", "-v")
-   .help("put a key and value into the database (requires --put <string>)")
-   .mode(optionparser::store_value);
-
-  p.add_option("--del", "-d")
-   .help("delete a key and value from the database")
-   .mode(optionparser::store_value);
-
-  p.add_option("--keys", "-k")
-   .help("list the keys in the current range")
-   .mode(optionparser::store_true);
-
-  p.add_option("--start", "-s")
-   .help("specify the start of the current range")
-   .mode(optionparser::store_value);
-
-  p.add_option("--end", "-e")
-   .help("specify the end of the current range")
-   .mode(optionparser::store_value);
-
-  p.add_option("--limit", "-l")
-   .help("limit the number of keys in the current range")
-   .mode(optionparser::store_value);
-
-  p.add_option("--create", "-c")
-   .help("create the database if one does not exist")
-   .mode(optionparser::store_true);
-
-  p.add_option("--error")
-   .help("throw an error if the databse does not exist")
-   .mode(optionparser::store_true);
-
-  p.add_option("--size")
-   .help("get the size of the current range")
-   .mode(optionparser::store_true);
-
-  p.add_option("--nocompression")
-   .help("turn off snappy conpression")
-   .mode(optionparser::store_true);
-
-  p.add_option("--version", "-V")
-   .help("prints out current version of ldb");
-
-  return p;
-}
+    Options:
+      -h --help        Show this screen.
+      --create         Create the database if it does not exist.
+      --error          Throw an error if the databse does not exist.
+      --size           Get the size of the current range.
+      --limit=<n>      Limit the number of records in the current range.
+      --lower=<lower>  The lower bound value to end the range.
+      --upper=<upper>  The upper bound value to start the range.
+      --nocompress     Do not use compression.
+      --version        Show version.
+)";
 
 //
 // main determines if the REPL should be launched or
@@ -98,39 +59,42 @@ optionparser::parser create_options_parser()
 //
 int main(int argc, const char** argv)
 {
-  bool interactive = false;
+  bool interactive = true;
   leveldb::Options options;
   options.compression = leveldb::kSnappyCompression;
-  optionparser::parser p = create_options_parser();
 
-  string path;
-  p.eat_arguments(argc, argv);
+  std::map<std::string, docopt::value> args = docopt::docopt(
+    USAGE,
+    { argv + 1, argv + argc },
+    true,
+    "ldb 2.0.0"
+  );
 
-  if (p.get_value("interactive")) {
-    interactive = true;
-    path = p.get_value<string>("interactive");
-  }
-  else if (p.get_value("version")) {
-    cout << LDB_VERSION << endl;
-    return 0;
-  }
-  else if (!argv[1] || argv[1][0] == '-') {
-    cerr << "A path is required" << endl;
-    return 1;
-  }
-  else {
-    path = argv[1];
-  }
+  //for(auto const& arg : args) {
+  //  std::cout << arg.first <<  arg.second << std::endl;
+  //}
 
-  if (p.get_value("create")) {
+  if (args["--create"] && args["--create"].asBool()) {
     options.create_if_missing = true;
   }
-  if (p.get_value("error")) {
+
+  if (args["--error"] && args["--error"].asBool()) {
     options.error_if_exists = true;
   }
-  if (p.get_value("nocompression")) {
+
+  if (args["--nocompress"] && args["--nocompress"].asBool()) {
     options.compression = leveldb::kNoCompression;
   }
+
+  if (args["del"].asBool() ||
+      args["put"].asBool() ||
+      args["get"].asBool() ||
+      args["keys"].asBool() ||
+      args["--size"].asBool()) {
+    interactive = false;
+  }
+
+  string path = args["<path>"].asString();
 
   leveldb::Status status = leveldb::DB::Open(options, path, &ldb::db);
 
@@ -144,35 +108,41 @@ int main(int argc, const char** argv)
     return 0;
   }
 
-  if (p.get_value("start")) {
-    ldb::key_start = p.get_value<string>("start");
+  if (args["--lower"]) {
+    ldb::key_start = args["--lower"].asString();
   }
 
-  if (p.get_value("end")) {
-    ldb::key_end = p.get_value<string>("end");
+  if (args["--upper"]) {
+    ldb::key_end = args["--upper"].asString();
   }
 
-  if (p.get_value("limit")) {
-    ldb::key_limit = p.get_value<int>("limit");
+  if (args["--limit"] && args["--limit"].asLong()) {
+    ldb::key_limit = args["--limit"].asLong();
   }
 
-  if (p.get_value("get")) {
-    ldb::get_value(p.get_value<string>("get"));
+  if (args["--size"] && args["--size"].asBool()) {
+    ldb::get_size();
+    return 0;
   }
-  else if (p.get_value("put") && p.get_value("value")) {
 
-    string key = p.get_value<string>("put");
-    string value = p.get_value<string>("value");
+  if (args["get"] && args["get"].asBool()) {
+    ldb::get_value(args["<key>"].asString());
+  }
+  else if (args["put"] && args["put"].asBool()) {
+
+    string key = args["<key>"].asString();
+    string value = args["<value>"].asString();
+
+    if (key.size() == 0 || value.size() == 0) {
+      return 1;
+    }
     ldb::put_value(key, value);
   }
-  else if (p.get_value("del")) {
-    ldb::del_value(p.get_value<string>("del"));
+  else if (args["del"] && args["del"].asBool()) {
+    ldb::del_value(args["<key>"].asString());
   }
-  else if (p.get_value("keys")) {
+  else if (args["keys"] && args["keys"].asBool()) {
     ldb::range("", false);
-  }
-  else if (p.get_value("size")) {
-    ldb::get_size();
   }
 
   return 0;

@@ -6,9 +6,9 @@ string hi_end = "\033[0m";
 //
 //
 //
-bool replace(std::string& str, const std::string& from, const std::string& to) {
+bool replace(string& str, const string& from, const string& to) {
   size_t start_pos = str.find(from);
-  if (start_pos == std::string::npos) return false;
+  if (start_pos == string::npos) return false;
   str.replace(start_pos, from.length(), to);
   return true;
 }
@@ -188,8 +188,6 @@ void ldb::get_size()
 
   // may be a bug in the docs, GetApproximateSizes returns void, not Status.
   db->GetApproximateSizes(ranges, 1, sizes);
-  if (sizes[0]) {
-    cout << sizes[0];
-  }
+  cout << sizes[0];
 }
 

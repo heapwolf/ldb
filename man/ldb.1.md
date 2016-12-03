@@ -1,102 +1,81 @@
-ldb(1) -- Explore and manage leveldb instances
+ldb(1) -- leveldb instance manager.
 =================================
 
 ## SYNOPSIS
 
-`ldb` \[-h|V\] \[-i\] pathname \[options\]
+  `ldb` pathname \[options\]
 
 ## DESCRIPTION
+  **ldb** allows you to explore, manage and create leveldb instances from a
+  repl, the commandline or a script.
 
-  `--help, -h`
-      output help information
+## OPTIONS
 
-  `--version, -V`
-      prints out current version of ldb
+  `-h --help`
+  Show this screen.
 
-  `--interactive, -i`
-      interactive mode (REPL)
-
-  `--get, -g`
-      a string that represents a key
-
-  `--put, -p`
-      put a key and value pair into the database (requires --value <string>)
-
-  `--value, -v`
-      put a key and value into the database (requires --put <string>)
-
-  `--del, -d`
-      delete a key and value from the database
-
-  `--keys, -k`
-      list the keys in the current range
-
-  `--start, -s`
-      specify the start of the current range
-
-  `--end, -e`
-      specify the end of the current range
-
-  `--limit, -l`
-      limit the number of keys in the current range
-
-  `--create, -c`
-      create the database if one does not exist
+  `--create`
+  Create the database if it does not exist.
 
   `--error`
-      throw an error if the databse does not exist
+  Throw an error if the databse does not exist.
 
   `--size`
-      get the size of the current range
+  Get the size of the current range.
 
+  `--nocompress`
+  Do not use compression.
+
+  `--version`
+  Show version.
 
 ## EXAMPLES
 
-  Open an existing database with interactive mode (REPL) and create the database if it
-  does not exist with optional flag `-c`:
+  Open an existing database with interactive mode (REPL) and create the
+  database if it does not exist with optional flag `--create`:
 
   ```
-  $ ldb -i ./testdb -c
+  $ ldb ./testdb --create
   ```
 
   Insert a key/value pair:
   ```
-  $ ldb ./db --put foo --value bar
+  $ ldb ./db put foo bar
   ```
 
   Get a value:
   ```
-  $ ldb ./db --get foo
+  $ ldb ./db get foo
   ```
 
   Delete a value:
   ```
-  $ ldb ./db --del foo
+  $ ldb ./db del foo
   ```
 
   List all keys in the database:
   ```
-  $ ldb ./db --keys
+  $ ldb ./db keys
   ```
 
   List the ten first keys in the database:
   ```
-  $ ldb ./db --keys --limit 10
+  $ ldb ./db keys --limit=10
   ```
 
   List all keys starting with `foo`:
   ```
-  $ ldb ./db --keys --start foo
+  $ ldb ./db keys --start=foo
   ```
 
   List all keys up to (not including) `bar`:
   ```
-  $ ldb ./db --keys --end bar
+  $ ldb ./db keys --end=bar
   ```
 
   Obviously you can do combinations:
   ```
-  $ ldb ./db --keys --start foo --end bar --limit 5
+  $ ldb ./db keys --start=foo --end=bar --limit=5
   ```
 
 ## KEY AUTO-COMPLETE
@@ -116,13 +95,13 @@ ldb(1) -- Explore and manage leveldb instances
   Get a key's value:
 
   ```
-  >get <keyname>
+  >get foo
   ```
 
   Put a value to a key:
 
   ```
-  >put <keyname>;<value>
+  >put foo 100
   ```
 
   List the keys in the curent range:
@@ -164,14 +143,14 @@ ldb(1) -- Explore and manage leveldb instances
 
 ## REPORTING BUGS
 
-  * <https://github.com/hij1nx/ldb/issues>
+  * <https://github.com/0x00a/ldb/issues>
 
 ## SEE ALSO
 
-  * <http://code.google.com/p/leveldb/>
-  * <https://github.com/hij1nx/lev>
+  * <https://github.com/google/leveldb>
+  * <https://github.com/0x00a/lev>
   * <https://github.com/antirez/linenoise>
-  * <https://github.com/lukedeo/cmd-parser>
+  * <https://github.com/docopt/docopt.cpp>
 
 ## LICENSE
 

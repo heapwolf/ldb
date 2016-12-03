@@ -1,7 +1,7 @@
 CXX ?= g++
 BIN ?= ldb
 LIBPATH ?= ./lib
-SRC = ldb.cc $(LIBPATH)/*.cc
+SRC = ldb.cc $(LIBPATH)/*.cc ./deps/docopt/docopt.cpp
 PREFIX ?= /usr/local
 LEVELDBPATH ?= ./deps/leveldb
 LIBLEVELDB ?= $(LEVELDBPATH)/out-static/libleveldb.a
@@ -27,14 +27,14 @@ $(LEVELDBPATH):
 leveldb: $(LEVELDBPATH)
 	make -C $(LEVELDBPATH)
 
-$(BIN): $(DEPS) $(LIBPATH)/*.cc deps/cmd-parser
+$(BIN): $(DEPS) $(LIBPATH)/*.cc deps/docopt
 	$(CXX) -o $(BIN) $(SRC) $(CXXFLAGS) -lpthread -L/usr/local/include $(LIBLEVELDB) $(DEPS)
 
 deps/snappy:
 	git clone --depth 1 git://github.com/0x00A/snappy.git ./deps/snappy
 
-deps/cmd-parser:
-	git clone --depth 1 git://github.com/lukedeo/cmd-parser.git ./deps/cmd-parser
+deps/docopt:
+	git clone --depth 1 git@github.com:docopt/docopt.cpp.git ./deps/docopt
 
 deps/linenoise:
 	git clone --depth 1 git://github.com/antirez/linenoise.git ./deps/linenoise

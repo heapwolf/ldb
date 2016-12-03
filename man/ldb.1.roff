@@ -1,125 +1,97 @@
 .\" Generated with Ronnjs 0.4.0
 .\" http://github.com/kapouer/ronnjs
 .
-.TH "LDB" "1" "May 2014" "" ""
+.TH "LDB" "1" "December 2016" "" ""
 .
 .SH "NAME"
-\fBldb\fR \-\- Explore and manage leveldb instances
+\fBldb\fR \-\- leveldb instance manager\.
 .
 .SH "SYNOPSIS"
-\fBldb\fR [\-h|V] [\-i] pathname [options]
+  \fBldb\fR pathname [options]
 .
 .SH "DESCRIPTION"
-  \fB\-\-help, \-h\fR
-      output help information
+  \fBldb\fR allows you to explore, manage and create leveldb instances from a
+  repl, the commandline or a script\.
+.
+.SH "OPTIONS"
+  \fB\-h \-\-help\fR
+  Show this screen\.
 .
 .P
-  \fB\-\-version, \-V\fR
-      prints out current version of ldb
-.
-.P
-  \fB\-\-interactive, \-i\fR
-      interactive mode (REPL)
-.
-.P
-  \fB\-\-get, \-g\fR
-      a string that represents a key
-.
-.P
-  \fB\-\-put, \-p\fR
-      put a key and value pair into the database (requires \-\-value <string>)
-.
-.P
-  \fB\-\-value, \-v\fR
-      put a key and value into the database (requires \-\-put <string>)
-.
-.P
-  \fB\-\-del, \-d\fR
-      delete a key and value from the database
-.
-.P
-  \fB\-\-keys, \-k\fR
-      list the keys in the current range
-.
-.P
-  \fB\-\-start, \-s\fR
-      specify the start of the current range
-.
-.P
-  \fB\-\-end, \-e\fR
-      specify the end of the current range
-.
-.P
-  \fB\-\-limit, \-l\fR
-      limit the number of keys in the current range
-.
-.P
-  \fB\-\-create, \-c\fR
-      create the database if one does not exist
+  \fB\-\-create\fR
+  Create the database if it does not exist\.
 .
 .P
   \fB\-\-error\fR
-      throw an error if the databse does not exist
+  Throw an error if the databse does not exist\.
 .
 .P
   \fB\-\-size\fR
-      get the size of the current range
+  Get the size of the current range\.
+.
+.P
+  \fB\-\-nocompress\fR
+  Do not use compression\.
+.
+.P
+  \fB\-\-version\fR
+  Show version\.
 .
 .SH "EXAMPLES"
-  Open an existing database with interactive mode (REPL) and create the database if it
-  does not exist with optional flag \fB\-c\fR:
+  Open an existing database with interactive mode (REPL) and create the
+  database if it does not exist with optional flag \fB\-\-create\fR:
 .
 .P
   \fB
-  $ ldb \-i \./testdb \-c
+  $ ldb \./testdb \-\-create
   \fR
 .
 .P
   Insert a key/value pair:
   \fB
-  $ ldb \./db \-\-put foo \-\-value bar
+  $ ldb \./db put foo bar
   \fR
 .
 .P
   Get a value:
   \fB
-  $ ldb \./db \-\-get foo
+  $ ldb \./db get foo
   \fR
 .
 .P
   Delete a value:
   \fB
-  $ ldb \./db \-\-del foo
+  $ ldb \./db del foo
   \fR
 .
 .P
   List all keys in the database:
   \fB
-  $ ldb \./db \-\-keys
+  $ ldb \./db keys
   \fR
 .
 .P
   List the ten first keys in the database:
   \fB
-  $ ldb \./db \-\-keys \-\-limit 10
+  $ ldb \./db keys \-\-limit=10
   \fR
 .
 .P
   List all keys starting with \fBfoo\fR:
   \fB
-  $ ldb \./db \-\-keys \-\-start foo
+  $ ldb \./db keys \-\-start=foo
   \fR
 .
 .P
   List all keys up to (not including) \fBbar\fR:
   \fB
-  $ ldb \./db \-\-keys \-\-end bar
+  $ ldb \./db keys \-\-end=bar
   \fR
 .
 .P
   Obviously you can do combinations:
   \fB
-  $ ldb \./db \-\-keys \-\-start foo \-\-end bar \-\-limit 5
+  $ ldb \./db keys \-\-start=foo \-\-end=bar \-\-limit=5
   \fR
 .
 .SH "KEY AUTO\-COMPLETE"
@@ -140,7 +112,7 @@
 .
 .P
   \fB
-  >get <keyname>
+  >get foo
   \fR
 .
 .P
@@ -148,7 +120,7 @@
 .
 .P
   \fB
-  >put <keyname>;<value>
+  >put foo 100
   \fR
 .
 .P
@@ -207,23 +179,23 @@ Joseph Werle \fI<joseph\.werle@gmail\.com\fR>
 .SH "REPORTING BUGS"
 .
 .IP "\(bu" 4
-\fIhttps://github\.com/hij1nx/ldb/issues\fR
+\fIhttps://github\.com/0x00a/ldb/issues\fR
 .
 .IP "" 0
 .
 .SH "SEE ALSO"
 .
 .IP "\(bu" 4
-\fIhttp://code\.google\.com/p/leveldb/\fR
+\fIhttps://github\.com/google/leveldb\fR
 .
 .IP "\(bu" 4
-\fIhttps://github\.com/hij1nx/lev\fR
+\fIhttps://github\.com/0x00a/lev\fR
 .
 .IP "\(bu" 4
 \fIhttps://github\.com/antirez/linenoise\fR
 .
 .IP "\(bu" 4
-\fIhttps://github\.com/lukedeo/cmd\-parser\fR
+\fIhttps://github\.com/docopt/docopt\.cpp\fR
 .
 .IP "" 0
 .

@@ -4,8 +4,8 @@
 #define PUT 2
 #define DEL 3
 #define LS 4
-#define START 5
-#define END 6
+#define LOWER 5
+#define UPPER 6
 #define LIMIT 7
 #define SIZE 8
 #define FIND 9
@@ -18,16 +18,18 @@
 // these are used by the repl.
 //
 vector<ldb::cDef> ldb::cmds = {
-  { GET,   "get",   "g",  "get a key from the database" },
-  { PUT,   "put",   "p",  "put a key/value into the database" },
+  { GET,   "get",   "g",   "get a key from the database" },
+  { PUT,   "put",   "p",   "put a key/value into the database" },
   { DEL,   "del",   "rm",  "delete a key/value from the database" },
-  { LS,    "keys",  "ls", "list the keys in the current range" },
-  { START, "start", "gt", "set the upper bound of the current range" },
-  { END,   "end",   "lt", "set the lower bound of the current range" },
-  { LIMIT, "limit", "l",  "set the limit of the current range" },
-  { SIZE,  "size",  "s",  "determine the size of the current range (in bytes)" },
+  { LS,    "keys",  "ls",  "list the keys in the current range" },
+  { LS,    "keys",  "ll",  "list the keys in the current range" },
+  { LS,    "keys",  "la",  "list the keys in the current range" },
+  { LOWER, "lower", "gt",  "set the lower bound of the current range" },
+  { UPPER, "upper", "lt",  "set the uppper bound of the current range" },
+  { LIMIT, "limit", "l",   "set the limit of the current range" },
+  { SIZE,  "size",  "s",   "determine the size of the current range (in bytes)" },
   { FIND,  "find",  "in",  "execute an expression against the current range" },
-  { HELP,  "help",  "?",  "print this list of REPL commands" }
+  { HELP,  "help",  "?",   "print this list of REPL commands" }
 };
 
 //
@@ -123,7 +125,7 @@ void ldb::startREPL() {
       }
 
       case PUT: {
-        vector<string> pair = parse_rest(cmd.rest, ';');
+        vector<string> pair = parse_rest(cmd.rest, ' ');
         ldb::put_value(pair[0], pair[1]);
         break;
       }
@@ -137,13 +139,13 @@ void ldb::startREPL() {
         ldb::range("", false);
         break;
 
-      case START:
-        cout << "START set to " << cmd.rest << endl;
+      case LOWER:
+        cout << "LOWER set to " << cmd.rest << endl;
         key_start = cmd.rest;
         break;
 
-      case END:
-        cout << "END set to " << cmd.rest << endl;
+      case UPPER:
+        cout << "UPPER set to " << cmd.rest << endl;
         key_end = cmd.rest;
         break;
 
@@ -180,9 +182,16 @@ void ldb::startREPL() {
       }
 
       case HELP:
+        cout << "Settings:" << endl;
+
+        cout << setw(16) << "upper (" << key_end << ")" << endl;
+        cout << setw(16) << "lower (" << key_start << ")" << endl;
+        cout << setw(16) << "limit (" << key_limit << ")" << endl << endl;
+
+        cout << "Commands:" << endl;
 
         for (auto &cmd : cmds) {
-          cout << ' ' << setw(12) << cmd.name;
+          cout << ' ' << setw(16) << cmd.name;
           cout << ' ' << setw(6) << cmd.alias;
           cout << ' ' << cmd.desc << endl;
         }

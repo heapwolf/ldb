@@ -1,7 +1,7 @@
 ![img](/man/logo.png)
 
 # SYNOPSIS
-A c++ repl for leveldb
+A c++ repl and cli tool for leveldb
 
 # INSTALL
 
@@ -15,7 +15,7 @@ $ clib install hij1nx/ldb
 
 ```cli
 $ brew install snappy
-$ git clone https://github.com/hij1nx/ldb.git
+$ git clone https://github.com/0x00a/ldb.git
 $ make install -C ldb
 ```
 
@@ -23,16 +23,16 @@ $ make install -C ldb
 
 ```cli
 $ apt-get install libsnappy-dev
-$ git clone https://github.com/hij1nx/ldb.git
+$ git clone https://github.com/0x00a/ldb.git
 $ sudo make install
 ```
 
 
 # USAGE
 Open an existing database with interactive mode (REPL) and create the
-database if it does not exist with optional flag `-c`.
+database if it does not exist with optional flag `--create`.
 ```bash
-ldb -i ./testdb -c
+ldb ./testdb --create
 ```
 
 Use as a commandline interface
@@ -47,7 +47,7 @@ available for autocomplete. If the limit is redefined, the cache will be
 refreshed to reflect the new range.
 
 When possible, hitting tab will allow you to cycle though keys that match
-your partial input. Also, if there is a partial match it will be highlighted 
+your partial input. Also, if there is a partial match it will be highlighted
 in the results.
 
 ![img](/man/colors.png)
@@ -55,16 +55,16 @@ in the results.
 ## COMMANDS
 You can `get`, `put` or `del` a single key at any time. Many of the following
 commands help you to create `ranges` so that you can casually explore smaller
-sets of data.
+sets of data. Type `?` to print more help.
 
 Get a key's value
 ```bash
->get <keyname>
+>get foo
 ```
 
 Put a value to a key
 ```bash
->put <keyname>;<value>
+>put foo 100
 ```
 
 List the keys in the curent range
