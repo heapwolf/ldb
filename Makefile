@@ -23,7 +23,7 @@ export CXXFLAGS
 all: leveldb $(BIN)
 
 $(LEVELDBPATH):
-	git clone --depth 1 git://github.com/google/leveldb.git $(LEVELDBPATH)
+	git clone --depth 1 https://github.com/google/leveldb $(LEVELDBPATH)
 leveldb: $(LEVELDBPATH)
 	make -C $(LEVELDBPATH)
 
@@ -31,13 +31,13 @@ $(BIN): $(DEPS) $(LIBPATH)/*.cc deps/docopt
 	$(CXX) -o $(BIN) $(SRC) $(CXXFLAGS) -lpthread -L/usr/local/include $(LIBLEVELDB) $(DEPS)
 
 deps/snappy:
-	git clone --depth 1 git://github.com/0x00A/snappy.git ./deps/snappy
+	git clone --depth 1 https://github.com/0x00A/snappy ./deps/snappy
 
 deps/docopt:
-	git clone --depth 1 git@github.com:docopt/docopt.cpp.git ./deps/docopt
+	git clone --depth 1 https://github.com/docopt/docopt.cpp ./deps/docopt
 
 deps/linenoise:
-	git clone --depth 1 git://github.com/antirez/linenoise.git ./deps/linenoise
+	git clone --depth 1 https://github.com/antirez/linenoise ./deps/linenoise
 
 linenoise.o: deps/linenoise
 	$(CC) -c deps/linenoise/*.c
