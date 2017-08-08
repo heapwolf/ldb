@@ -1,8 +1,5 @@
 #include "../ldb.h"
 
-string hi_start = "\033[1;31m";
-string hi_end = "\033[0m";
-
 //
 //
 //
@@ -36,8 +33,11 @@ void ldb::get_value(string key)
 
   if (!status.ok()) {
     cerr << status.ToString() << key << endl;
-  }
-  else {
+  } else {
+    if (json > 0) {
+      value = JSON(value, json);
+    }
+
     cout << value << endl;
   }
 }
@@ -98,8 +98,7 @@ void ldb::find(string exp, int type)
 
         string partial = subject.substr(substart, matchlen);
         output = sKey + ": ..." + partial + "...\r\n";
-      }
-      else {
+      } else {
         output = subject + "\r\n";
       }
       cout << output << endl;
@@ -130,7 +129,7 @@ void ldb::range(string prefix, bool surpress_output)
 
   for (itr->Seek(key_start); itr->Valid(); itr->Next()) {
     leveldb::Slice key = itr->key();
-    leveldb::Slice value = itr->value();
+    // leveldb::Slice value = itr->value();
 
     string sKey = key.ToString();
 
@@ -149,7 +148,7 @@ void ldb::range(string prefix, bool surpress_output)
   for (itr->Seek(key_start); itr->Valid(); itr->Next()) {
 
     leveldb::Slice key = itr->key();
-    leveldb::Slice value = itr->value();
+    // leveldb::Slice value = itr->value();
 
     string sKey = key.ToString();
 
@@ -164,9 +163,14 @@ void ldb::range(string prefix, bool surpress_output)
 
       int replaced = replace(sKey, prefix, hi_start + prefix + hi_end);
 
+      if ((prefix.size() > 0) && replaced == 0) {
+        count--;
+        continue;
+      }
+
       cout << setw(replaced ? colSize : maxWidth) << left << sKey;
 
-      if (count == maxColumns - 1) {
+      if (count == maxColumns) {
         count = 0;
         cout << "\r\n";
       }
@@ -190,4 +194,3 @@ void ldb::get_size()
   db->GetApproximateSizes(ranges, 1, sizes);
   cout << sizes[0];
 }
-

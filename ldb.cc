@@ -28,6 +28,23 @@ int ldb::key_limit = 1000;
 leveldb::DB* ldb::db;
 
 //
+// try to print JSON
+//
+int ldb::json = 2;
+
+//
+// colors
+//
+string ldb::COLOR_RED = "\033[1;31m";
+string ldb::COLOR_BLUE = "\033[1;34m";
+string ldb::COLOR_YELLOW = "\033[1;33m";
+string ldb::COLOR_GRAY = "\033[1;90m";
+string ldb::COLOR_NONE = "\033[0m";
+
+string ldb::hi_start = COLOR_BLUE;
+string ldb::hi_end = COLOR_NONE;
+
+//
 // command line options
 //
 static const char USAGE[] =
@@ -67,7 +84,7 @@ int main(int argc, const char** argv)
     USAGE,
     { argv + 1, argv + argc },
     true,
-    "ldb 2.0.0"
+    "ldb 2.1.0"
   );
 
   //for(auto const& arg : args) {

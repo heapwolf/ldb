@@ -98,3 +98,9 @@ Get the size of the the current range (in bytes)
 >size
 ```
 
+Try to format the output of values as JSON. Use `<number>` is the indent)
+and `0` to turn off JSON formatting.
+
+```bash
+>json <number>
+```

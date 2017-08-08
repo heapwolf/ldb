@@ -49,6 +49,18 @@ namespace ldb {
   extern string key_end;
   extern int key_limit;
 
+  extern string COLOR_RED;
+  extern string COLOR_YELLOW;
+  extern string COLOR_BLUE;
+  extern string COLOR_GRAY;
+  extern string COLOR_NONE;
+
+  extern string hi_start;
+  extern string hi_end;
+
+  extern int json;
+  string JSON(string str, int indent);
+
   void startREPL();
   void find(string exp, int type);
   void auto_completion(const char *buf, linenoiseCompletions *lc);

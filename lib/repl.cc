@@ -1,15 +1,16 @@
 #include "../ldb.h"
 
-#define GET 1
+#define GET 0
 #define PUT 2
 #define DEL 3
 #define LS 4
 #define LOWER 5
 #define UPPER 6
 #define LIMIT 7
-#define SIZE 8
-#define FIND 9
-#define HELP 10
+#define JSON 8
+#define SIZE 9
+#define FIND 10
+#define HELP 11
 
 #define HISTORY_FILE ".ldb_history"
 
@@ -18,15 +19,16 @@
 // these are used by the repl.
 //
 vector<ldb::cDef> ldb::cmds = {
-  { GET,   "get",   "g",   "get a key from the database" },
-  { PUT,   "put",   "p",   "put a key/value into the database" },
-  { DEL,   "del",   "rm",  "delete a key/value from the database" },
+  { GET,   "get",   "g",   "get a key from the database <str>" },
+  { PUT,   "put",   "p",   "put a key/value into the database <str>" },
+  { DEL,   "del",   "rm",  "delete a key/value from the database <str>" },
   { LS,    "keys",  "ls",  "list the keys in the current range" },
   { LS,    "keys",  "ll",  "list the keys in the current range" },
   { LS,    "keys",  "la",  "list the keys in the current range" },
-  { LOWER, "lower", "gt",  "set the lower bound of the current range" },
-  { UPPER, "upper", "lt",  "set the uppper bound of the current range" },
-  { LIMIT, "limit", "l",   "set the limit of the current range" },
+  { LOWER, "lower", "gt",  "set the lower bound of the current range <str>" },
+  { UPPER, "upper", "lt",  "set the uppper bound of the current range <str>" },
+  { LIMIT, "limit", "l",   "set the limit of the current range <n>" },
+  { JSON,  "json",  "j",   "try to format values as json <n>" },
   { SIZE,  "size",  "s",   "determine the size of the current range (in bytes)" },
   { FIND,  "find",  "in",  "execute an expression against the current range" },
   { HELP,  "help",  "?",   "print this list of REPL commands" }
@@ -105,13 +107,14 @@ vector<string> ldb::parse_rest(const string& rest, const char& splitter)
 void ldb::startREPL() {
 
   char *line = NULL;
+  string format_json = "false";
 
   linenoiseSetCompletionCallback(ldb::auto_completion);
   linenoiseHistoryLoad(HISTORY_FILE);
 
   ldb::range("", true);
 
-  while ((line = linenoise("> "))) {
+  while ((line = linenoise(">"))) {
 
     if ('\0' == line[0]) cout << endl;
 
@@ -163,6 +166,10 @@ void ldb::startREPL() {
         break;
       }
 
+      case JSON:
+        json = atoi(cmd.rest.c_str());
+        break;
+
       case SIZE:
         ldb::get_size();
         break;
@@ -173,8 +180,7 @@ void ldb::startREPL() {
 
         if (parts.size() == 2) {
           ldb::find(parts[1], parts[0] == "keys" ? 0 : 1);
-        }
-        else {
+        } else {
           ldb::find(cmd.rest, 0);
         }
 
@@ -182,13 +188,14 @@ void ldb::startREPL() {
       }
 
       case HELP:
-        cout << "Settings:" << endl;
+        cout << "Settings:" << endl << endl;
 
-        cout << setw(16) << "upper (" << key_end << ")" << endl;
-        cout << setw(16) << "lower (" << key_start << ")" << endl;
-        cout << setw(16) << "limit (" << key_limit << ")" << endl << endl;
+        cout << setw(16) << "upper " << hi_start << key_end << hi_end << endl;
+        cout << setw(16) << "lower " << hi_start << key_start << hi_end << endl;
+        cout << setw(16) << "limit " << hi_start << key_limit << hi_end << endl;
+        cout << setw(16) << "json " << hi_start << json << hi_end << endl << endl;
 
-        cout << "Commands:" << endl;
+        cout << "Commands:" << endl << endl;
 
         for (auto &cmd : cmds) {
           cout << ' ' << setw(16) << cmd.name;
