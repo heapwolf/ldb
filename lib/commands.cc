@@ -147,12 +147,12 @@ void ldb::range(string prefix, bool surpress_output)
 
   for (itr->Seek(key_start); itr->Valid(); itr->Next()) {
 
-    leveldb::Slice key = itr->key();
-    // leveldb::Slice value = itr->value();
+    string sKey = itr->key().ToString();
 
-    string sKey = key.ToString();
-
-    if (sKey == key_end) break;
+    if (key_end != "") {
+      size_t start_pos = sKey.find(key_end);
+      if (start_pos != string::npos) break;
+    }
 
     ldb::key_cache.push_back(sKey);
 
