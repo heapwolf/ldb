@@ -39,7 +39,6 @@ vector<ldb::cDef> ldb::cmds = {
 //
 void ldb::auto_completion(const char *buf, linenoiseCompletions *lc)
 {
-  cout << endl;
   string line(buf);
   //
   // this should actually search to find out if the thing
@@ -107,7 +106,6 @@ vector<string> ldb::parse_rest(const string& rest, const char& splitter)
 void ldb::startREPL() {
 
   char *line = NULL;
-  string format_json = "false";
 
   linenoiseSetCompletionCallback(ldb::auto_completion);
   linenoiseHistoryLoad(HISTORY_FILE);
@@ -115,8 +113,6 @@ void ldb::startREPL() {
   ldb::range("", true);
 
   while ((line = linenoise(">"))) {
-
-    if ('\0' == line[0]) cout << endl;
 
     string l = line;
     ldb::command cmd = ldb::parse_cmd(l, ldb::cmds);
@@ -206,9 +202,7 @@ void ldb::startREPL() {
         break;
 
       default:
-        if (l == "") break;
-        cout << "unknown: " << l << endl;
-        break;
+        return;
     }
 
     linenoiseHistoryAdd(line);

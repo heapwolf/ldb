@@ -13,8 +13,7 @@ bool replace(string& str, const string& from, const string& to) {
 //
 //
 //
-void ldb::put_value(string key, string value)
-{
+void ldb::put_value(string key, string value) {
   leveldb::WriteOptions writeOptions;
   leveldb::Status status;
   status = db->Put(writeOptions, key, value);
@@ -26,13 +25,14 @@ void ldb::put_value(string key, string value)
 //
 //
 //
-void ldb::get_value(string key)
-{
+void ldb::get_value(string key) {
+  if (key == "") return;
+
   string value;
   leveldb::Status status = db->Get(leveldb::ReadOptions(), key, &value);
 
   if (!status.ok()) {
-    cerr << status.ToString() << key << endl;
+    cerr << "Not Found: [" << COLOR_BLUE << key << COLOR_NONE << "]" << endl;
   } else {
     if (json > 0) {
       value = JSON(value, json);
@@ -45,8 +45,7 @@ void ldb::get_value(string key)
 //
 //
 //
-void ldb::del_value(string key)
-{
+void ldb::del_value(string key) {
   leveldb::WriteOptions writeOptions;
   leveldb::Status status;
 
@@ -59,8 +58,7 @@ void ldb::del_value(string key)
 //
 //
 //
-void ldb::find(string exp, int type)
-{
+void ldb::find(string exp, int type) {
   cout << "\r\n";
   regex e(exp);
 
@@ -112,9 +110,7 @@ void ldb::find(string exp, int type)
 //
 //
 //
-void ldb::range(string prefix, bool surpress_output)
-{
-  cout << "\r\n";
+void ldb::range(string prefix, bool surpress_output) {
   struct winsize term;
   ioctl(0, TIOCGWINSZ, &term);
 
@@ -124,16 +120,18 @@ void ldb::range(string prefix, bool surpress_output)
   int maxWidth = 0;
   int maxColumns = 0;
   int padding = 2;
+  bool initLine = false;
 
   leveldb::Iterator* itr = db->NewIterator(leveldb::ReadOptions());
 
   for (itr->Seek(key_start); itr->Valid(); itr->Next()) {
-    leveldb::Slice key = itr->key();
-    // leveldb::Slice value = itr->value();
+    count++;
+    string sKey = itr->key().ToString();
 
-    string sKey = key.ToString();
-
-    if (sKey == key_end) break;
+    if (key_end != "") {
+      size_t start_pos = sKey.find(key_end);
+      if (start_pos != string::npos) break;
+    }
 
     int len = sKey.length();
     if (len > maxWidth) {
@@ -141,11 +139,20 @@ void ldb::range(string prefix, bool surpress_output)
     }
   }
 
+  if (count == 0) return;
+
+  count = 0;
+
   maxWidth += padding;
   maxColumns = term.ws_col / maxWidth;
   int colSize = maxWidth + hi_start.length() + hi_end.length();
 
   for (itr->Seek(key_start); itr->Valid(); itr->Next()) {
+
+    if (!initLine) {
+      cout << "\r";
+      initLine = true;
+    }
 
     string sKey = itr->key().ToString();
 
@@ -168,24 +175,27 @@ void ldb::range(string prefix, bool surpress_output)
         continue;
       }
 
+      if (sKey.length() > maxWidth) {
+        sKey = sKey.substr(0, maxWidth - 3) + "...";
+      }
+
       cout << setw(replaced ? colSize : maxWidth) << left << sKey;
 
-      if (count == maxColumns) {
+      if ((count == maxColumns) && (count > 0)) {
         count = 0;
         cout << "\r\n";
       }
     }
   }
 
-  cout << "\r\n";
+  if (count) cout << "\r\n";
   delete itr;
 }
 
 //
 //
 //
-void ldb::get_size()
-{
+void ldb::get_size() {
   leveldb::Range ranges[1]; // we only keep one range, maybe allow more?
   ranges[0] = leveldb::Range(key_start, key_end);
   uint64_t sizes[1];
