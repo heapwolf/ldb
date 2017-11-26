@@ -72,6 +72,8 @@ Find string in keys or values using a regex
 >in values <regex>
 ```
 
+![img](/man/find.png)
+
 Set the start of the current range
 ```bash
 >start <string>

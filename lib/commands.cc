@@ -62,6 +62,8 @@ void ldb::find(string exp, int type) {
   cout << "\r\n";
   regex e(exp);
 
+  int hits = 0;
+
   leveldb::Iterator* itr = db->NewIterator(leveldb::ReadOptions());
 
   for (itr->Seek(key_start); itr->Valid(); itr->Next()) {
@@ -80,6 +82,7 @@ void ldb::find(string exp, int type) {
     regex_search(subject, m, e);
 
     if (m.length()) {
+      hits++;
 
       string s = subject.substr(m.position(), m.length());
       replace(subject, s, hi_start + s + hi_end);
@@ -102,6 +105,17 @@ void ldb::find(string exp, int type) {
       cout << output << endl;
     }
   }
+
+  cout
+    << endl
+    << "["
+    << "Found "
+    << COLOR_BLUE
+    << hits
+    << COLOR_NONE
+    << " occurrences"
+    << "]"
+    << endl;
 
   cout << "\r\n";
   delete itr;
