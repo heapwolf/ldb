@@ -190,7 +190,7 @@ void ldb::range(string prefix, bool surpress_output) {
         continue;
       }
 
-      if (sKey.length() > maxWidth) {
+      if (maxWidth > 32 && sKey.length() > maxWidth) {
         sKey = sKey.substr(0, maxWidth - 3) + "...";
       }
 
