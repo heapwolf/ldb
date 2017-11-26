@@ -144,6 +144,7 @@ void ldb::range(string prefix, bool surpress_output) {
   count = 0;
 
   maxWidth += padding;
+  maxWidth = std::min(maxWidth, (int) term.ws_col);
   maxColumns = term.ws_col / maxWidth;
   int colSize = maxWidth + hi_start.length() + hi_end.length();
 
