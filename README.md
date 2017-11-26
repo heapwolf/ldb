@@ -3,12 +3,6 @@
 # SYNOPSIS
 A c++ repl and cli tool for leveldb
 
-# INSTALL
-
-```bash
-$ clib install hij1nx/ldb
-```
-
 # BUILD
 
 ## Mac OS X
@@ -104,3 +98,5 @@ and `0` to turn off JSON formatting.
 ```bash
 >json <number>
 ```
+
+![img](/man/json.png)

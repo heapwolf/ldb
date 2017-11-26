@@ -117,6 +117,7 @@ void ldb::range(string prefix, bool surpress_output) {
   key_cache.clear();
 
   int count = 0;
+  int total = 0;
   int maxWidth = 0;
   int maxColumns = 0;
   int padding = 2;
@@ -166,8 +167,21 @@ void ldb::range(string prefix, bool surpress_output) {
 
     if (surpress_output == false) {
       count++;
+      total++;
 
-      if (count == key_limit + 1) break;
+      if (total == key_limit + 1) {
+        cout
+          << endl
+          << "["
+          << "Output limited to "
+          << COLOR_BLUE
+          << key_limit
+          << COLOR_NONE
+          << " results"
+          << "]"
+          << endl;
+        break;
+      }
 
       int replaced = replace(sKey, prefix, hi_start + prefix + hi_end);
 
