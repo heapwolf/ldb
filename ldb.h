@@ -66,6 +66,7 @@ namespace ldb {
   void auto_completion(const char *buf, linenoiseCompletions *lc);
   void put_value(string key, string value);
   void get_value(string key);
+  void get_value_bin(string key);
   void del_value(string key);
   void get_size();
   void range(string prefix, bool surpress_output);

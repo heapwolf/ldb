@@ -42,6 +42,19 @@ void ldb::get_value(string key) {
   }
 }
 
+void ldb::get_value_bin(string key) {
+  if (key == "") return;
+
+  string value;
+  leveldb::Status status = db->Get(leveldb::ReadOptions(), key, &value);
+
+  if (!status.ok()) {
+    cerr << "Not Found: [" << COLOR_BLUE << key << COLOR_NONE << "]" << endl;
+  } else {
+    cout << value;
+  }
+}
+
 //
 //
 //
