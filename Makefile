@@ -28,7 +28,7 @@ leveldb: $(LEVELDBPATH)
 	make -C $(LEVELDBPATH)
 
 $(BIN): $(DEPS) $(LIBPATH)/*.cc deps/docopt
-	$(CXX) -o $(BIN) $(SRC) $(CXXFLAGS) -lpthread -L/usr/local/lib -lsnappy $(LIBLEVELDB) $(DEPS)
+	$(CXX) -o $(BIN) $(SRC) $(CXXFLAGS) -lpthread -L/usr/local/lib $(LIBLEVELDB) $(DEPS) -lsnappy
 
 deps/snappy:
 	git clone --depth 1 https://github.com/0x00A/snappy ./deps/snappy
