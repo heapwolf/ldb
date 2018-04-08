@@ -23,7 +23,7 @@ export CXXFLAGS
 all: leveldb $(BIN)
 
 $(LEVELDBPATH):
-	git clone --depth 1 https://github.com/google/leveldb $(LEVELDBPATH)
+	git clone --depth 1 --single-branch --branch v1.20 https://github.com/google/leveldb $(LEVELDBPATH)
 leveldb: $(LEVELDBPATH)
 	make -C $(LEVELDBPATH)
 
