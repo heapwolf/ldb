@@ -4,7 +4,8 @@ LIBPATH ?= ./lib
 SRC = ldb.cc $(LIBPATH)/*.cc ./deps/docopt/docopt.cpp
 PREFIX ?= /usr/local
 LEVELDBPATH ?= ./deps/leveldb
-LIBLEVELDB ?= $(LEVELDBPATH)/out-static/libleveldb.a
+LEVELDBBUILD ?= ./deps/leveldb/build
+LIBLEVELDB ?= $(LEVELDBBUILD)/libleveldb.a
 LIBSNAPPY ?= ./deps/snappy
 CXXFLAGS += -I$(LEVELDBPATH)/include -std=gnu++11
 
@@ -25,7 +26,8 @@ all: leveldb $(BIN)
 $(LEVELDBPATH):
 	git clone --depth 1 https://github.com/google/leveldb $(LEVELDBPATH)
 leveldb: $(LEVELDBPATH)
-	make -C $(LEVELDBPATH)
+	cmake -DCMAKE_BUILD_TYPE=Release -B$(LEVELDBBUILD) -H$(LEVELDBPATH) && \
+	cmake --build $(LEVELDBBUILD)
 
 $(BIN): $(DEPS) $(LIBPATH)/*.cc deps/docopt
 	$(CXX) -o $(BIN) $(SRC) $(CXXFLAGS) -lpthread -L/usr/local/lib -lsnappy $(LIBLEVELDB) $(DEPS)
