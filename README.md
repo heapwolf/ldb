@@ -16,9 +16,10 @@ $ make install -C ldb
 ## Linux (Debian / others?)
 
 ```cli
-$ apt-get install libsnappy-dev cmake
+$ sudo apt-get install libsnappy-dev cmake
 $ git clone https://github.com/0x00a/ldb.git
-$ sudo make install
+$ cd ldb
+$ make && sudo make install
 ```
 
 
