@@ -28,9 +28,9 @@ int ldb::key_limit = 1000;
 leveldb::DB* ldb::db;
 
 //
-// try to print JSON
+// don't try to print JSON
 //
-int ldb::json = 2;
+int ldb::json = 0;
 
 //
 // colors
@@ -121,6 +121,8 @@ int main(int argc, const char** argv)
   }
 
   if (interactive) {
+    // try to print JSON
+    ldb::json = 2;
     ldb::startREPL();
     return 0;
   }
@@ -164,4 +166,3 @@ int main(int argc, const char** argv)
 
   return 0;
 }
-
