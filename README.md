@@ -9,7 +9,7 @@ A c++ repl and cli tool for leveldb
 
 ```cli
 $ brew install snappy cmake
-$ git clone https://github.com/0x00a/ldb.git
+$ git clone https://github.com/heapwolf/ldb.git
 $ make install -C ldb
 ```
 
@@ -17,7 +17,7 @@ $ make install -C ldb
 
 ```cli
 $ sudo apt-get install libsnappy-dev cmake
-$ git clone https://github.com/0x00a/ldb.git
+$ git clone https://github.com/heapwolf/ldb.git
 $ cd ldb
 $ make && sudo make install
 ```

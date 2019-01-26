@@ -1,7 +1,7 @@
 {
   "name": "ldb",
   "version": "2.3.0",
-  "repo": "0x00A/ldb",
+  "repo": "heapwolf/ldb",
   "description": "A c++ repl for leveldb",
   "keywords": [
     "leveldb",
