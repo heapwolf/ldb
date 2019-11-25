@@ -26,7 +26,12 @@ all: leveldb $(BIN)
 $(LEVELDBPATH):
 	git clone --depth 1 https://github.com/google/leveldb $(LEVELDBPATH)
 leveldb: $(LEVELDBPATH)
-	cmake -DCMAKE_BUILD_TYPE=Release -B$(LEVELDBBUILD) -H$(LEVELDBPATH) && \
+	cmake -DCMAKE_BUILD_TYPE=Release\
+    -DLEVELDB_BUILD_TESTS=OFF\
+    -DLEVELDB_BUILD_BENCHMARKS=OFF\
+    -DHAVE_KYOTOCABINET=OFF\
+    -B$(LEVELDBBUILD) \
+    -H$(LEVELDBPATH) && \
 	cmake --build $(LEVELDBBUILD)
 
 $(BIN): $(DEPS) $(LIBPATH)/*.cc deps/docopt
