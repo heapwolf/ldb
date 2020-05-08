@@ -52,7 +52,7 @@ R"(ldb
 
     Usage:
       ldb <path> [--create] [--error] [--size] [--nocompress]
-      ldb <path> (del|get) <key>
+      ldb <path> (del|get|getbin) <key>
       ldb <path> put <key> <value> [--nocompress]
       ldb <path> keys [--limit=<n>] [--lower=<lower>] [--upper=<upper>]
       ldb (-h | --help)
@@ -106,6 +106,7 @@ int main(int argc, const char** argv)
   if (args["del"].asBool() ||
       args["put"].asBool() ||
       args["get"].asBool() ||
+      args["getbin"].asBool() ||
       args["keys"].asBool() ||
       args["--size"].asBool()) {
     interactive = false;
@@ -146,6 +147,9 @@ int main(int argc, const char** argv)
 
   if (args["get"] && args["get"].asBool()) {
     ldb::get_value(args["<key>"].asString());
+  }
+  else if (args["getbin"] && args["getbin"].asBool()) {
+    ldb::get_value_bin(args["<key>"].asString());
   }
   else if (args["put"] && args["put"].asBool()) {
 
